@@ -58,8 +58,7 @@ public class ScanFragment extends Fragment {
     private Runnable packageApiCall, shelfApiCall;
     private String authToken;
     private ScanResponse.Data currentPackageInfo; // CORRECTED TYPE
-    private TargetInfoResponse.TargetData currentTargetInfo;
-    private TargetInfo currentTargetRackInfo;
+    private TargetInfo currentTargetInfo;
     private int tempQuantity = 0;
 
     private enum ScanTarget { PACKAGE, SHELF }
@@ -294,7 +293,7 @@ public class ScanFragment extends Fragment {
 
         String transactionType = currentTargetInfo.getOperationType();
         String packageCode = currentPackageInfo.getPackageCode();
-        String targetRackCode = currentTargetRackInfo.getRackCode();
+        String targetRackCode = currentTargetInfo.getRackCode();
 
         ScanRequest request = new ScanRequest(packageCode, targetRackCode, quantity, transactionType, "安卓设备提交", allUse);
 
@@ -349,6 +348,12 @@ public class ScanFragment extends Fragment {
     editTextDetectedOperation.setText(transactionName);
     selectSpinnerItemByValue(transactionName);
 
+    if ("usage_out".equals(transactionType)) {
+        checkBoxAllUse.setVisibility(View.VISIBLE);
+    } else {
+        checkBoxAllUse.setVisibility(View.GONE);
+    }
+
     if ("usage_out".equals(transactionType) || "location_adjust".equals(transactionType)) {
         if (currentPackageInfo != null) {
             Log.d(TAG, "displayOperationInfo: Setting quantity to " + currentPackageInfo.getPieces());
@@ -382,6 +387,7 @@ public class ScanFragment extends Fragment {
         editTextDetectedOperation.setText("");
         editTextQuantity.setText("");
         checkBoxAllUse.setChecked(false);
+        checkBoxAllUse.setVisibility(View.GONE);
         selectSpinnerItemByValue("请选择操作类型");
     }
 

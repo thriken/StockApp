@@ -20,7 +20,9 @@
         <item>归还入库</item>
         <item>报废出库</item>
         <item>部分领用</item>
-        <item>基地流转</item>
+        <item>库位调整</item>
+    </string-array>
+    <string-array name="stock_type">
         <item>盘盈入库</item>
         <item>盘亏出库</item>
     </string-array>

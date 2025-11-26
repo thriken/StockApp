@@ -156,7 +156,8 @@
                 android:id="@+id/checkbox_all_use"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="全部用完" />
+                android:text="全部用完"
+                android:visibility="gone" />
 
             <TextView
                 android:layout_width="wrap_content"
