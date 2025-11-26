@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">原片库存系统</string>
+    <string name="press_back_again_to_exit">再按一次退出</string>
+    <string name="text_password">密码</string>
+    <string name="btn_login">登录</string>
+    <string name="text_loginid">账号</string>
+    <string name="InventorySystem">原片管理系统</string>
+    <string name="barcode">包号/二维码</string>
+    <string name="scan">扫描</string>
+    <string name="targetRackNo">目标架号</string>
+    <string name="autoOptType">自动检测操作类型:</string>
+    <string name="num">数量</string>
+    <string name="optType">操作类型</string>
+    <string name="all_use">全部使用</string>
+    <string name="submit">提交</string>
+    <string-array name="operation_types">
+        <item>请选择操作类型</item>
+        <item>采购入库</item>
+        <item>领用出库</item>
+        <item>归还入库</item>
+        <item>报废出库</item>
+        <item>部分领用</item>
+        <item>基地流转</item>
+        <item>盘盈入库</item>
+        <item>盘亏出库</item>
+    </string-array>
+</resources>
