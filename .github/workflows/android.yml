@@ -8,9 +8,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v5
     - name: set up JDK 17
@@ -18,11 +16,20 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        architecture: arm,x64,x86
-        cache: gradle
+        architecture: x64
+        -cache: gradle
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v5
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+    - name: Run lint
+      run: ./gradlew lint
     - name: Build with Gradle
       run: ./gradlew build
+    - name: Run tests
+      run: ./gradlew test
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+          name: android-build
+          path: app/build/outputs/
