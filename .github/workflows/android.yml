@@ -21,9 +21,12 @@ jobs:
       uses: gradle/actions/setup-gradle@v5
     - name: Download Gradle manually
       run: |
-        wget https://github.com/gradle/gradle-distributions/releases/download/v8.13.0/gradle-8.13-bin.zip -P ~/.gradle/wrapper/dists/gradle-8.13-bin/
+        wget https://github.com/gradle/gradle-distributions/releases/download/v8.13.0/gradle-8.13-bin.zip -P /tmp/
+        unzip /tmp/gradle-8.13-bin.zip -d ~/.gradle/wrapper/dists/gradle-8.13-bin/
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+    - name: pwd
+      run: pwd
     - name: Build with Gradle
       run: ./gradlew build
     - name: Run tests
