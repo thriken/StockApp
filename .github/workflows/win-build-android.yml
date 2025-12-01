@@ -37,7 +37,8 @@ jobs:
         pwd
         d:
         cd D:/a/StockApp/StockApp
-        wget https://github.com/gradle/gradle-distributions/releases/download/v8.13.0/gradle-8.13-bin.zip -P ./
+        # 简单下载
+        Start-BitsTransfer -Source "https://github.com/gradle/gradle-distributions/releases/download/v8.13.0/gradle-8.13-bin.zip" -Destination "D:/a/StockApp/StockApp/gradle-8.13-bin.zip"
     - name: Build with Gradle
       run: ./gradlew build
       env:
