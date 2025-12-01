@@ -32,13 +32,8 @@ jobs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
-    - name: 手动下载Gradle
-      run: |
-        pwd
-        d:
-        cd D:/a/StockApp/StockApp
-        # 简单下载
-        Start-BitsTransfer -Source "https://github.com/gradle/gradle-distributions/releases/download/v8.13.0/gradle-8.13-bin.zip" -Destination "D:/a/StockApp/StockApp/gradle-8.13-bin.zip"
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
     - name: Build with Gradle
       run: ./gradlew build
       env:
