@@ -32,7 +32,7 @@ jobs:
     - name: 清理，编译，并刷新依赖项
       run: |
         ./gradlew clean
-        ./gradlew build --refresh-dependencies --stacktrace
+        ./gradlew build --refresh-dependencies --debug
     - name: Gradle开始编译
       run: ./gradlew build
     - name: 运行测试
