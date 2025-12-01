@@ -2,55 +2,24 @@ name: Android CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
-    - name: 设置 JDK 17
+    - name: set up JDK 17
       uses: actions/setup-java@v5
       with:
         java-version: '17'
         distribution: 'temurin'
         architecture: x64
-    - name: 手动下载Gradle
-      run: |
-        mkdir -p ~/.gradle/wrapper/dists/gradle-8.13-bin/
-        wget https://github.com/gradle/gradle-distributions/releases/download/v8.13.0/gradle-8.13-bin.zip -P /tmp/
-        unzip /tmp/gradle-8.13-bin.zip -d ~/.gradle/wrapper/dists/gradle-8.13-bin/
-        ~/.gradle/wrapper/dists/gradle-8.13-bin/gradle-8.13/bin/gradle --version
-    - name: 授权gradlew
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v5
+    - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-
-    - name: Check network connectivity
-      run: |
-        ping -c 3 services.gradle.org
-        curl -I https://maven.aliyun.com/repository/public
-    - name: Check dependency resolution
-      run: ./gradlew buildEnvironment --info
-    - name: Verify Gradle setup
-      run: |
-        ./gradlew --version
-        ls -la ~/.gradle/wrapper/dists/
-
-    - name: 修复 Gradle  URL
-      run: |
-        # 修改 gradle-wrapper.properties 文件
-        sed -i 's|distributionUrl=.*|distributionUrl=file:///tmp/gradle-8.13-bin.zip|g' gradle/wrapper/gradle-wrapper.properties
-    - name: 清理，编译，并刷新依赖项
-      run: |
-        ./gradlew clean
-        ./gradlew build --refresh-dependencies --debug
-    - name: Gradle开始编译
-      run: ./gradlew build
-    - name: 运行测试
-      run: ./gradlew test
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-          name: android-build
-          path: app/build/outputs/
+    - name: Build with Gradle
+      run: ./gradlew build --info --stacktrace
