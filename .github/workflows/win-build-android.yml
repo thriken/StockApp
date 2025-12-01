@@ -1,4 +1,4 @@
-name: Android CI
+name: WIN Android CI
 
 on:
   push:
