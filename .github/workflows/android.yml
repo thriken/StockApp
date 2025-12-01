@@ -25,6 +25,18 @@ jobs:
         ~/.gradle/wrapper/dists/gradle-8.13-bin/gradle-8.13/bin/gradle --version
     - name: 授权gradlew
       run: chmod +x gradlew
+
+    - name: Check network connectivity
+      run: |
+        ping -c 3 services.gradle.org
+        curl -I https://maven.aliyun.com/repository/public
+    - name: Check dependency resolution
+      run: ./gradlew buildEnvironment --info
+    - name: Verify Gradle setup
+      run: |
+        ./gradlew --version
+        ls -la ~/.gradle/wrapper/dists/
+
     - name: 修复 Gradle  URL
       run: |
         # 修改 gradle-wrapper.properties 文件
