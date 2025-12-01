@@ -23,3 +23,10 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew build --info --stacktrace
+    - name: 运行测试
+      run: ./gradlew test
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+          name: android-build
+          path: app/build/outputs/
