@@ -11,29 +11,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
-    - name: set up JDK 17
+    - name: 设置 JDK 17
       uses: actions/setup-java@v5
       with:
         java-version: '17'
         distribution: 'temurin'
         architecture: x64
-    - name: Download Gradle manually
+    - name: 手动下载Gradle
       run: |
         mkdir -p ~/.gradle/wrapper/dists/gradle-8.13-bin/
         wget https://github.com/gradle/gradle-distributions/releases/download/v8.13.0/gradle-8.13-bin.zip -P /tmp/
         unzip /tmp/gradle-8.13-bin.zip -d ~/.gradle/wrapper/dists/gradle-8.13-bin/
         ~/.gradle/wrapper/dists/gradle-8.13-bin/gradle-8.13/bin/gradle --version
-    - name: Grant execute permission for gradlew
+    - name: 授权gradlew
       run: chmod +x gradlew
-    - name: pwd
-      run: pwd
-    - name: Fix Gradle distribution URL
+    - name: 修复 Gradle  URL
       run: |
         # 修改 gradle-wrapper.properties 文件
         sed -i 's|distributionUrl=.*|distributionUrl=file:///tmp/gradle-8.13-bin.zip|g' gradle/wrapper/gradle-wrapper.properties
-    - name: Build with Gradle
+    - name: 清理，编译，并刷新依赖项
+      run: |
+        ./gradlew clean
+        ./gradlew build --refresh-dependencies --stacktrace
+    - name: Gradle开始编译
       run: ./gradlew build
-    - name: Run tests
+    - name: 运行测试
       run: ./gradlew test
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
