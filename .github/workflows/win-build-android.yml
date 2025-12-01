@@ -32,6 +32,11 @@ jobs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
+    - name: Use Gradle Mirror for CI
+      shell: powershell # 指定使用 PowerShell
+      run: |
+        # 将官方地址替换为腾讯云镜像地址
+        (Get-Content gradle/wrapper/gradle-wrapper.properties) -replace 'https\\://services.gradle.org/distributions/', 'https://mirrors.cloud.tencent.com/gradle/' | Set-Content gradle/wrapper/gradle-wrapper.properties
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
     - name: Build with Gradle
