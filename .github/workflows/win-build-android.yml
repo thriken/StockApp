@@ -39,7 +39,7 @@ jobs:
       run: |
         Write-Host "Downloading Gradle from GitHub releases..."
         # 使用 Invoke-WebRequest 从 GitHub 下载，这比 Gradle 自己的下载器更可靠
-        Invoke-WebRequest -Uri "https\://services.gradle.org/distributions/gradle-8.14.3-all.zip" -OutFile "gradle-8.14.3-all.zip"
+        Invoke-WebRequest -Uri "https://services.gradle.org/distributions/gradle-8.14.3-all.zip" -OutFile "gradle-8.14.3-all.zip"
         Write-Host "Download complete. File saved to gradle-8.14.3-all.zip"
 
     # 【关键步骤2】修改 gradle-wrapper.properties 以使用本地文件
