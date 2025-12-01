@@ -36,7 +36,6 @@ jobs:
       run: |
         pwd
         d:
-        mkdir D:/a/StockApp/StockApp
         cd D:/a/StockApp/StockApp
         wget https://github.com/gradle/gradle-distributions/releases/download/v8.13.0/gradle-8.13-bin.zip -P ./
     - name: Build with Gradle
