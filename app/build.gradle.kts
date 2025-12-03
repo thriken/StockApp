@@ -1,16 +1,14 @@
 plugins {
-    alias(libs.plugins.android.application)
+    id("com.android.application")
 }
 
 android {
     namespace = "com.win7e.yuan.stock"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     signingConfigs {
         create("release") {
-            storeFile = file("D:/Android/apksign.keystore")
+            storeFile = file("../apksign.keystore")
             storePassword = project.property("RELEASE_STORE_PASSWORD") as String
             keyAlias = project.property("RELEASE_KEY_ALIAS") as String
             keyPassword = project.property("RELEASE_KEY_PASSWORD") as String
@@ -22,7 +20,7 @@ android {
         minSdk = 21
         targetSdk = 36
         versionCode = 1
-        versionName = "1.1"
+        versionName = "1.11"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -38,8 +36,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         viewBinding = true
