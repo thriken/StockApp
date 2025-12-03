@@ -6,20 +6,6 @@ on:
   pull_request:
     branches: ["master"]
 jobs:
-  actual-tests:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        javaVersion: [ 17 ]
-        gradle: [ current, release-candidate ]
-        agp: [ "stable"]
-    steps:
-      - id: agp-version-finder
-        uses: usefulness/agp-version-finder-action@v1
-        with:
-          version-to-resolve: ${{ matrix.agp }}
-      - run: echo ${{ steps.agp-version-finder.outputs.resolved-version }}
   build:
     runs-on: ubuntu-latest
     steps:
@@ -30,6 +16,27 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         architecture: x64
+        # 【关键步骤1】手动下载 Gradle 到项目根目录
+    - name: Manually Download Gradle
+      shell: powershell
+      run: |
+        pwd
+        d:
+        cd D:/a/StockApp/StockApp
+        # 简单下载
+        Start-BitsTransfer -Source "https://services.gradle.org/distributions/gradle-8.4-all.zip" -Destination "D:/a/StockApp/StockApp/gradle-8.4-all.zip"
+
+    # 【关键步骤2】修改 gradle-wrapper.properties 以使用本地文件
+    - name: Configure Gradle Wrapper to use Local Distribution
+      shell: powershell
+      run: |
+        Write-Host "Configuring gradle-wrapper.properties to use the local distribution..."
+        # 将 distributionUrl 替换为指向项目根目录下文件的相对路径
+        # gradle/wrapper/ -> ../.. -> 项目根目录
+        (Get-Content gradle/wrapper/gradle-wrapper.properties) -replace 'distributionUrl=.*', 'distributionUrl=../../gradle-8.4-all.zip' | Set-Content gradle/wrapper/gradle-wrapper.properties
+        Write-Host "Configuration updated. Content is now:"
+        Get-Content gradle/wrapper/gradle-wrapper.properties # 打印出来确认修改成功
+        nslookup google.com
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v5
     - name: Grant execute permission for gradlew
