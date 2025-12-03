@@ -41,7 +41,7 @@ jobs:
         d:
         cd D:/a/StockApp/StockApp
         # 简单下载
-        Start-BitsTransfer -Source "https://github.com/gradle/gradle-distributions/releases/download/v8.4/gradle-8.4-all.zip" -Destination "D:/a/StockApp/StockApp/gradle-8.4-all.zip"
+        Start-BitsTransfer -Source "https://services.gradle.org/distributions/gradle-8.4-all.zip" -Destination "D:/a/StockApp/StockApp/gradle-8.4-all.zip"
 
     # 【关键步骤2】修改 gradle-wrapper.properties 以使用本地文件
     - name: Configure Gradle Wrapper to use Local Distribution
