@@ -18,16 +18,14 @@ jobs:
       - name: Grant Gradlew executable permissions
         run: chmod +x ./gradlew
 
-      # 3. Workaround for network issues: Download Gradle manually
+      # 3. Workaround Part 1: Download Gradle manually to ensure startup
       - name: Download Gradle Distribution
         run: wget https://services.gradle.org/distributions/gradle-8.13-all.zip
 
       # 4. Point Gradle wrapper to the local distribution
       - name: Configure Gradle Wrapper to use local distribution
         run: |
-          # Escape the workspace path for sed
           escaped_path=$(echo "${{ github.workspace }}/gradle-8.13-all.zip" | sed 's/\//\\\//g')
-          # Update the distributionUrl in the properties file
           sed -i "s/distributionUrl=.*/distributionUrl=file:\/\/${escaped_path}/" gradle/wrapper/gradle-wrapper.properties
           echo "distributionUrl has been updated to:"
           cat gradle/wrapper/gradle-wrapper.properties
@@ -47,6 +45,9 @@ jobs:
         with:
           arguments: app:assembleRelease
         env:
+          # Workaround Part 2: Force Java to use IPv4 for all network requests during the build
+          GRADLE_OPTS: -Djava.net.preferIPv4Stack=true
+          # Pass signing secrets to the build
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_KEY_ALIAS_PASSWORD: ${{ secrets.SIGNING_KEY_ALIAS_PASSWORD }}
