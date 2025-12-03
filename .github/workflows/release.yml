@@ -14,7 +14,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 2. Decode and install the signing key
+      # 2. Grant execute permission for gradlew
+      - name: Grant Gradlew executable permissions
+        run: chmod +x ./gradlew
+
+      # 3. Decode and install the signing key
       # The SIGNING_KEY_BASE64 secret needs to be created in the GitHub repository settings
       - name: Decode Keystore
         env:
@@ -24,19 +28,21 @@ jobs:
           echo $SIGNING_KEY_BASE64 | base64 --decode > ${{ github.workspace }}/app/keystore.jks
           echo "Keystore decoded successfully."
 
-      # 3. Build the release APK using the official Gradle action
+      # 4. Build the release APK using the official Gradle action
       # This action handles Java setup, Gradle caching, and execution.
-      # The secrets for signing need to be created in the GitHub repository settings
-      - name: Build with Gradle
+      - name: Build with Gradle (force IPv4)
         uses: gradle/gradle-build-action@v3
         with:
           arguments: app:assembleRelease
         env:
+          # Force Java to use IPv4 stack, which can solve connection issues in some CI environments
+          GRADLE_OPTS: -Djava.net.preferIPv4Stack=true
+          # Pass signing secrets to the build
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_KEY_ALIAS_PASSWORD: ${{ secrets.SIGNING_KEY_ALIAS_PASSWORD }}
 
-      # 4. Upload the generated APK
+      # 5. Upload the generated APK
       # The APK will be available in the "Actions" tab of the repository
       - name: Upload APK
         uses: actions/upload-artifact@v4
