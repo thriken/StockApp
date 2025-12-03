@@ -5,8 +5,21 @@ on:
     branches: ["master"]
   pull_request:
     branches: ["master"]
-
 jobs:
+  actual-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        javaVersion: [ 17 ]
+        gradle: [ current, release-candidate ]
+        agp: [ "stable"]
+    steps:
+      - id: agp-version-finder
+        uses: usefulness/agp-version-finder-action@v1
+        with:
+          version-to-resolve: ${{ matrix.agp }}
+      - run: echo ${{ steps.agp-version-finder.outputs.resolved-version }}
   build:
     runs-on: ubuntu-latest
     steps:
