@@ -25,38 +25,26 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # 4. Workaround Part 1: Download Gradle manually
-      - name: Download Gradle Distribution
-        run: wget https://services.gradle.org/distributions/gradle-8.13-all.zip
-
-      # 5. Point Gradle wrapper to the local distribution
-      - name: Configure Gradle Wrapper to use local distribution
-        run: |
-          escaped_path=$(echo "${{ github.workspace }}/gradle-8.13-all.zip" | sed 's/\//\\\//g')
-          sed -i "s/distributionUrl=.*/distributionUrl=file:\/\/${escaped_path}/" gradle/wrapper/gradle-wrapper.properties
-          echo "distributionUrl has been updated to:"
-          cat gradle/wrapper/gradle-wrapper.properties
-
-      # 6. Decode and install the signing key
+      # 4. Decode and install the signing key
       - name: Decode Keystore
         env:
           SIGNING_KEY_BASE64: ${{ secrets.SIGNING_KEY_BASE64 }}
         run: |
-          echo $SIGNING_KEY_BASE64 | base64 --decode > ${{ github.workspace }}/app/keystore.jks
+          # Decode the base64 secret and create the keystore file in the app/ directory
+          echo $SIGNING_KEY_BASE64 | base64 --decode > ${{ github.workspace }}/app/apksign.keystore
+          echo "Keystore file created at app/apksign.keystore"
 
-      # 7. Build with Gradle (fully manual)
+      # 5. Build with Gradle
       - name: Build with Gradle
         env:
-          # Workaround Part 2: Force Java to use IPv4 for all network requests
-          GRADLE_OPTS: -Djava.net.preferIPv4Stack=true
-          # Pass signing secrets to the build
-          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-          SIGNING_KEY_ALIAS_PASSWORD: ${{ secrets.SIGNING_KEY_ALIAS_PASSWORD }}
+          # These are read from the project's gradle.properties file
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         # Use --no-daemon for a clean build in CI
         run: ./gradlew app:assembleRelease --no-daemon
 
-      # 8. Upload the generated APK
+      # 6. Upload the generated APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
