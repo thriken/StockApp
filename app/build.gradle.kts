@@ -6,6 +6,8 @@ android {
     namespace = "com.win7e.yuan.stock"
     compileSdk = 36
 
+    // The signingConfigs block is now only for local builds.
+    // The CI process will handle signing separately.
     signingConfigs {
         create("release") {
             storeFile = file("apksign.keystore")
@@ -32,7 +34,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+            // We remove the signingConfig from here for CI builds
+            // This will produce an unsigned APK by default
         }
     }
     compileOptions {

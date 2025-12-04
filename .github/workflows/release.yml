@@ -1,9 +1,11 @@
 name: Android Release APK Build
 
-# Controls when the workflow will run
+# This workflow builds an unsigned APK and then signs it using a dedicated action.
+# This is the most robust method for Android CI/CD.
+
 on:
   push:
-    branches: [ "main", "master" ] # Trigger on pushes to main or master
+    branches: [ "main", "master" ]
 
 jobs:
   build:
@@ -25,28 +27,27 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # 4. Decode and install the signing key (Robust Method)
-      - name: Decode Keystore
-        env:
-          SIGNING_KEY_BASE64: ${{ secrets.SIGNING_KEY_BASE64 }}
-        run: |
-          # Use printf for a more reliable way to handle the secret string
-          printf "%s" "$SIGNING_KEY_BASE64" | base64 --decode > ${{ github.workspace }}/app/apksign.keystore
-          echo "Keystore file created at app/apksign.keystore"
-
-      # 5. Build with Gradle
-      - name: Build with Gradle
-        env:
-          # Pass secrets to be used by gradle.properties
-          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
-          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
-          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-        # Use --no-daemon for a clean build in CI
+      # 4. Build the unsigned APK
+      - name: Build unsigned release APK
         run: ./gradlew app:assembleRelease --no-daemon
 
-      # 6. Upload the generated APK
-      - name: Upload APK
+      # 5. Sign the APK
+      # This action is a dedicated, hardened tool for Android signing.
+      # It correctly handles secrets and the signing process.
+      - name: Sign APK
+        id: sign_apk
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY_BASE64 }}
+          alias: ${{ secrets.RELEASE_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.RELEASE_KEY_PASSWORD }}
+
+      # 6. Upload the final signed APK
+      - name: Upload Signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
-          path: app/build/outputs/apk/release/app-release.apk
+          name: app-release-signed
+          # The signed APK is available from the output of the signing action
+          path: ${{ steps.sign_apk.outputs.signedReleaseFile }}
