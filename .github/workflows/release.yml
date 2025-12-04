@@ -37,12 +37,12 @@ jobs:
       # 6. Sign the APK with a modern action
       - name: Sign APK
         id: sign_apk
-        # Using a more modern and maintained signing action
         uses: ilharp/sign-android-release@v1
         with:
-          releaseDirectory: app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.SIGNING_KEY_BASE64 }}
-          alias: ${{ secrets.RELEASE_KEY_ALIAS }}
+          # Corrected parameter names for this action
+          releaseDir: app/build/outputs/apk/release
+          signingKey: ${{ secrets.SIGNING_KEY_BASE64 }}
+          keyAlias: ${{ secrets.RELEASE_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.RELEASE_STORE_PASSWORD }}
           keyPassword: ${{ secrets.RELEASE_KEY_PASSWORD }}
 
