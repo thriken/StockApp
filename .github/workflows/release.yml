@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Grant permissions for the job to create a release
+    permissions:
+      contents: write
 
     steps:
       # 1. Check out the repository
