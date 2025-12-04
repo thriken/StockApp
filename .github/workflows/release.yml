@@ -1,7 +1,6 @@
 name: Android Release APK Build
 
-# This workflow builds an unsigned APK and then signs it using a dedicated action.
-# This is the most robust method for Android CI/CD.
+# This workflow builds an unsigned APK, diagnoses the environment, and then signs it.
 
 on:
   push:
@@ -31,12 +30,17 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      # 5. Build the unsigned APK
+      # 5. Diagnostic Step: List available build tools
+      - name: List Build Tools
+        run: |
+          echo "Listing contents of ANDROID_HOME/build-tools:"
+          ls -l $ANDROID_HOME/build-tools
+
+      # 6. Build the unsigned APK
       - name: Build unsigned release APK
         run: ./gradlew app:assembleRelease --no-daemon
 
-      # 6. Sign the APK
-      # This action is a dedicated, hardened tool for Android signing.
+      # 7. Sign the APK
       - name: Sign APK
         id: sign_apk
         uses: r0adkll/sign-android-release@v1
@@ -46,11 +50,12 @@ jobs:
           alias: ${{ secrets.RELEASE_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.RELEASE_STORE_PASSWORD }}
           keyPassword: ${{ secrets.RELEASE_KEY_PASSWORD }}
+          # Explicitly specify the build tools version
+          buildToolsVersion: 34.0.0
 
-      # 7. Upload the final signed APK
+      # 8. Upload the final signed APK
       - name: Upload Signed APK
         uses: actions/upload-artifact@v4
         with:
           name: app-release-signed
-          # The signed APK is available from the output of the signing action
           path: ${{ steps.sign_apk.outputs.signedReleaseFile }}
