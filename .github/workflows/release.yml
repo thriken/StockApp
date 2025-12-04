@@ -44,7 +44,6 @@ jobs:
           keyAlias: ${{ secrets.RELEASE_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.RELEASE_STORE_PASSWORD }}
           keyPassword: ${{ secrets.RELEASE_KEY_PASSWORD }}
-          # Explicitly specify the build tools version to solve path issues
           buildToolsVersion: 34.0.0
 
       # 7. Upload the final signed APK
@@ -52,4 +51,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-release-signed
-          path: ${{ steps.sign_apk.outputs.signedReleaseFile }}
+          # Corrected the output variable name to 'signedFile'
+          path: ${{ steps.sign_apk.outputs.signedFile }}
