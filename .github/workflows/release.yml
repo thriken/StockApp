@@ -25,19 +25,19 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # 4. Decode and install the signing key
+      # 4. Decode and install the signing key (Robust Method)
       - name: Decode Keystore
         env:
           SIGNING_KEY_BASE64: ${{ secrets.SIGNING_KEY_BASE64 }}
         run: |
-          # Use quotes to preserve the multi-line secret
-          echo "$SIGNING_KEY_BASE64" | base64 --decode > ${{ github.workspace }}/app/apksign.keystore
+          # Use printf for a more reliable way to handle the secret string
+          printf "%s" "$SIGNING_KEY_BASE64" | base64 --decode > ${{ github.workspace }}/app/apksign.keystore
           echo "Keystore file created at app/apksign.keystore"
 
       # 5. Build with Gradle
       - name: Build with Gradle
         env:
-          # These are read from the project's gradle.properties file
+          # Pass secrets to be used by gradle.properties
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
