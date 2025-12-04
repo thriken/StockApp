@@ -39,12 +39,13 @@ jobs:
         id: sign_apk
         uses: ilharp/sign-android-release@v1
         with:
-          # Corrected parameter names for this action
           releaseDir: app/build/outputs/apk/release
           signingKey: ${{ secrets.SIGNING_KEY_BASE64 }}
           keyAlias: ${{ secrets.RELEASE_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.RELEASE_STORE_PASSWORD }}
           keyPassword: ${{ secrets.RELEASE_KEY_PASSWORD }}
+          # Explicitly specify the build tools version to solve path issues
+          buildToolsVersion: 34.0.0
 
       # 7. Upload the final signed APK
       - name: Upload Signed APK
