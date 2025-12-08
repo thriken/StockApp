@@ -1,10 +1,14 @@
 package com.win7e.yuan.stock.network;
 
+import com.win7e.yuan.stock.model.InventoryTaskListResponse;
+import com.win7e.yuan.stock.model.InventoryTask;
 import com.win7e.yuan.stock.model.LoginRequest;
 import com.win7e.yuan.stock.model.LoginResponse;
 import com.win7e.yuan.stock.model.ScanRequest;
 import com.win7e.yuan.stock.model.ScanResponse;
 import com.win7e.yuan.stock.model.TargetInfoResponse;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -25,4 +29,7 @@ public interface ApiService {
 
     @POST("scan.php")
     Call<ScanResponse> executeTransaction(@Header("Authorization") String token, @Body ScanRequest scanRequest);
+
+    @GET("inventory_check.php")
+    Call<InventoryTaskListResponse> getInventoryTasks(@Header("Authorization") String token, @Query("action") String action);
 }

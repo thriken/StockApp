@@ -1,5 +1,6 @@
 package com.win7e.yuan.stock;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -19,9 +20,32 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new LoginFragment())
-                    .commit();
+            SharedPreferences sharedPreferences = getSharedPreferences("stock_prefs", MODE_PRIVATE);
+            String token = sharedPreferences.getString("token", null);
+
+            if (token != null && !token.isEmpty()) {
+                // Token exists, go directly to MainFragment
+                String name = sharedPreferences.getString("name", "");
+                String role = sharedPreferences.getString("role", "");
+                String baseId = sharedPreferences.getString("base_id", "");
+
+                Bundle bundle = new Bundle();
+                bundle.putString("name", name);
+                bundle.putString("role", role);
+                bundle.putString("base_id", baseId);
+
+                MainFragment mainFragment = new MainFragment();
+                mainFragment.setArguments(bundle);
+
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, mainFragment)
+                        .commit();
+            } else {
+                // No token, go to LoginFragment
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new LoginFragment())
+                        .commit();
+            }
         }
     }
 

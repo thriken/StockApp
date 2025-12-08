@@ -71,14 +71,18 @@ public class LoginFragment extends Fragment {
                         // Login successful
                         Toast.makeText(getContext(), loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
 
-                        // Save token
+                        User user = loginResponse.getData().getUser();
+
+                        // Save token and user info
                         SharedPreferences sharedPreferences = getContext().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("token", loginResponse.getData().getToken());
+                        editor.putString("name", user.getName());
+                        editor.putString("role", user.getRole());
+                        editor.putString("base_id", user.getBaseId());
                         editor.apply();
 
                         // Navigate to MainFragment
-                        User user = loginResponse.getData().getUser();
                         Bundle bundle = new Bundle();
                         bundle.putString("name", user.getName());
                         bundle.putString("role", user.getRole());

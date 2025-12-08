@@ -34,6 +34,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
             // We remove the signingConfig from here for CI builds
             // This will produce an unsigned APK by default
         }

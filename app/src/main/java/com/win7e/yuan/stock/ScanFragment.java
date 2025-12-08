@@ -61,7 +61,8 @@ public class ScanFragment extends Fragment {
     private TargetInfo currentTargetInfo;
     private int tempQuantity = 0;
 
-    private enum ScanTarget { PACKAGE, SHELF }
+    private enum ScanTarget {PACKAGE, SHELF}
+
     private ScanTarget currentScanTarget;
 
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
@@ -175,23 +176,35 @@ public class ScanFragment extends Fragment {
         shelfApiCall = () -> callApiForTargetInfo(editTextShelfId.getText().toString());
 
         editTextPackageId.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 handler.removeCallbacks(packageApiCall);
                 resetPackageInfo();
             }
-            @Override public void afterTextChanged(Editable s) {
+
+            @Override
+            public void afterTextChanged(Editable s) {
                 if (s.length() > 0) handler.postDelayed(packageApiCall, 1000);
             }
         });
 
         editTextShelfId.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 handler.removeCallbacks(shelfApiCall);
                 resetTargetInfo();
             }
-            @Override public void afterTextChanged(Editable s) {
+
+            @Override
+            public void afterTextChanged(Editable s) {
                 if (s.length() > 0) handler.postDelayed(shelfApiCall, 500);
             }
         });
@@ -225,7 +238,7 @@ public class ScanFragment extends Fragment {
         });
     }
 
- private void callApiForTargetInfo(String rackCode) {
+    private void callApiForTargetInfo(String rackCode) {
         if (currentPackageInfo == null) {
             Log.d(TAG, "callApiForTargetInfo: currentPackageInfo is null, aborting.");
             return;
@@ -331,30 +344,29 @@ public class ScanFragment extends Fragment {
         }
     }
 
-   private void displayOperationInfo() {
-    Log.d(TAG, "displayOperationInfo: Called.");
-    if (currentTargetInfo == null) {
-        Log.e(TAG, "displayOperationInfo: currentTargetInfo is null. Cannot display operation info.");
-        return;
-    }
+    private void displayOperationInfo() {
+        Log.d(TAG, "displayOperationInfo: Called.");
+        if (currentTargetInfo == null) {
+            Log.e(TAG, "displayOperationInfo: currentTargetInfo is null. Cannot display operation info.");
+            return;
+        }
 
-    Log.d(TAG, "displayOperationInfo: currentTargetInfo: " + new Gson().toJson(currentTargetInfo));
+        Log.d(TAG, "displayOperationInfo: currentTargetInfo: " + new Gson().toJson(currentTargetInfo));
 
-    String transactionName = currentTargetInfo.getOperationName();
-    String transactionType = currentTargetInfo.getOperationType();
+        String transactionName = currentTargetInfo.getOperationName();
+        String transactionType = currentTargetInfo.getOperationType();
 
-    Log.d(TAG, "displayOperationInfo: Transaction Name: " + transactionName + ", Transaction Type: " + transactionType);
+        Log.d(TAG, "displayOperationInfo: Transaction Name: " + transactionName + ", Transaction Type: " + transactionType);
 
-    editTextDetectedOperation.setText(transactionName);
-    selectSpinnerItemByValue(transactionName);
+        editTextDetectedOperation.setText(transactionName);
+        selectSpinnerItemByValue(transactionName);
 
-    if ("usage_out".equals(transactionType)) {
-        checkBoxAllUse.setVisibility(View.VISIBLE);
-    } else {
-        checkBoxAllUse.setVisibility(View.GONE);
-    }
+        if ("usage_out".equals(transactionType)) {
+            checkBoxAllUse.setVisibility(View.VISIBLE);
+        } else {
+            checkBoxAllUse.setVisibility(View.GONE);
+        }
 
-    if ("usage_out".equals(transactionType) || "location_adjust".equals(transactionType)) {
         if (currentPackageInfo != null) {
             Log.d(TAG, "displayOperationInfo: Setting quantity to " + currentPackageInfo.getPieces());
             editTextQuantity.setText(String.valueOf(currentPackageInfo.getPieces()));
@@ -362,8 +374,6 @@ public class ScanFragment extends Fragment {
             Log.e(TAG, "displayOperationInfo: currentPackageInfo is null, cannot set quantity.");
         }
     }
-}
-
 
     private void selectSpinnerItemByValue(String value) {
         if (value == null) return;
@@ -391,7 +401,7 @@ public class ScanFragment extends Fragment {
         selectSpinnerItemByValue("请选择操作类型");
     }
 
-    private void resetAll(){
+    private void resetAll() {
         resetPackageInfo();
         editTextPackageId.setText("");
         editTextShelfId.setText("");

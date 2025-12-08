@@ -1,6 +1,8 @@
 package com.win7e.yuan.stock;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,11 +47,23 @@ public class MainFragment extends Fragment {
             String baseId = getArguments().getString("base_id");
             String userInfoText = "[" + baseNames.get(baseId) + "] " + roles.get(role) + " " + name;
             userInfo.setText(userInfoText);
+
+            // Show inventory check card for specific roles
+            if ("manager".equals(role) || "admin".equals(role)) {
+                CardView inventoryCheckCard = view.findViewById(R.id.card_inventory_check);
+                inventoryCheckCard.setVisibility(View.VISIBLE);
+                inventoryCheckCard.setOnClickListener(v -> {
+                    InventoryCheckFragment inventoryCheckFragment = new InventoryCheckFragment();
+                    getParentFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, inventoryCheckFragment)
+                            .addToBackStack(null)
+                            .commit();
+                });
+            }
         }
 
         CardView scanCard = view.findViewById(R.id.card_scan);
         scanCard.setOnClickListener(v -> {
-            // Create a new instance every time to prevent crash on reuse
             ScanFragment scanFragment = new ScanFragment(); 
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, scanFragment)
@@ -63,8 +77,14 @@ public class MainFragment extends Fragment {
                     .setTitle("退出登录")
                     .setMessage("您确定要退出登录吗?")
                     .setPositiveButton("确定", (dialog, which) -> {
-                        // For now, just exit the app. Later, we can clear token and go to login.
-                        getActivity().finish();
+                        // Clear all stored user data
+                        SharedPreferences sharedPreferences = getContext().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
+                        sharedPreferences.edit().clear().apply();
+
+                        // Navigate back to the LoginFragment
+                        getParentFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, new LoginFragment())
+                                .commit();
                     })
                     .setNegativeButton("取消", null)
                     .show();
