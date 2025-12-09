@@ -28,6 +28,7 @@ public class LoginFragment extends Fragment {
 
     private EditText editTextEmail;
     private EditText editTextPassword;
+    private Button buttonLogin;
 
     @Nullable
     @Override
@@ -36,79 +37,86 @@ public class LoginFragment extends Fragment {
 
         editTextEmail = view.findViewById(R.id.edit_text_email);
         editTextPassword = view.findViewById(R.id.edit_text_password);
-        Button buttonLogin = view.findViewById(R.id.button_login);
+        buttonLogin = view.findViewById(R.id.button_login);
         ImageButton buttonSettings = view.findViewById(R.id.button_settings);
 
         buttonLogin.setOnClickListener(v -> loginUser());
-        buttonSettings.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new SettingsFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
+        buttonSettings.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, new SettingsFragment())
+                .addToBackStack(null)
+                .commit());
 
         return view;
     }
 
     private void loginUser() {
+        buttonLogin.setEnabled(false);
+
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
 
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(getContext(), "请输入用户名和密码", Toast.LENGTH_SHORT).show();
+            buttonLogin.setEnabled(true);
             return;
         }
 
         LoginRequest loginRequest = new LoginRequest(email, password);
         Call<LoginResponse> call = RetrofitClient.getApiService().login(loginRequest);
 
-        call.enqueue(new Callback<LoginResponse>() {
+        call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    LoginResponse loginResponse = response.body();
-                    if (loginResponse.getCode() == 200) {
-                        // Login successful
-                        Toast.makeText(getContext(), loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onResponse(@NonNull Call<LoginResponse> call, @NonNull Response<LoginResponse> response) {
+                if (!isAdded()) {
+                    return; // Fragment is detached, do nothing.
+                }
 
-                        User user = loginResponse.getData().getUser();
+                if (response.isSuccessful() && response.body() != null && response.body().getCode() == 200) {
+                    // Login successful
+                    Toast.makeText(requireContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
 
-                        // Save token and user info
-                        SharedPreferences sharedPreferences = getContext().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString("token", loginResponse.getData().getToken());
-                        editor.putString("name", user.getName());
-                        editor.putString("role", user.getRole());
-                        editor.putString("base_id", user.getBaseId());
-                        editor.apply();
+                    User user = response.body().getData().getUser();
 
-                        // Navigate to MainFragment
-                        Bundle bundle = new Bundle();
-                        bundle.putString("name", user.getName());
-                        bundle.putString("role", user.getRole());
-                        bundle.putString("base_id", user.getBaseId());
+                    // Save token and user info
+                    SharedPreferences sharedPreferences = requireContext().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("token", response.body().getData().getToken());
+                    editor.putString("name", user.getName());
+                    editor.putString("role", user.getRole());
+                    editor.putString("base_id", user.getBaseId());
+                    editor.apply();
 
-                        MainFragment mainFragment = new MainFragment();
-                        mainFragment.setArguments(bundle);
+                    // Navigate to MainFragment
+                    Bundle bundle = new Bundle();
+                    bundle.putString("name", user.getName());
+                    bundle.putString("role", user.getRole());
+                    bundle.putString("base_id", user.getBaseId());
 
-                        getParentFragmentManager().beginTransaction()
-                                .replace(R.id.fragment_container, mainFragment)
-                                .commit();
+                    MainFragment mainFragment = new MainFragment();
+                    mainFragment.setArguments(bundle);
 
-                    } else {
-                        // Login failed
-                        Toast.makeText(getContext(), loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
+                    getParentFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, mainFragment)
+                            .commit();
                 } else {
-                    // Request failed
-                    Toast.makeText(getContext(), "登录失败，请重试。", Toast.LENGTH_SHORT).show();
+                    // Login failed (API logic error or HTTP error)
+                    String errorMessage = "登录失败，请重试。";
+                    if (response.body() != null) {
+                        errorMessage = response.body().getMessage();
+                    }
+                    Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show();
+                    buttonLogin.setEnabled(true);
                 }
             }
 
             @Override
-            public void onFailure(Call<LoginResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<LoginResponse> call, @NonNull Throwable t) {
+                if (!isAdded()) {
+                    return; // Fragment is detached, do nothing.
+                }
                 // Network error
-                Toast.makeText(getContext(), "网络错误，请检查您的网络连接。", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "网络错误，请检查您的网络连接。", Toast.LENGTH_SHORT).show();
+                buttonLogin.setEnabled(true);
             }
         });
     }
