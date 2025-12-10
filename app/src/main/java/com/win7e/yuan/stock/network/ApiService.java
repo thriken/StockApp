@@ -1,5 +1,6 @@
 package com.win7e.yuan.stock.network;
 
+import com.win7e.yuan.stock.model.AppInfoResponse;
 import com.win7e.yuan.stock.model.InventoryTaskListResponse;
 import com.win7e.yuan.stock.model.InventoryTask;
 import com.win7e.yuan.stock.model.LoginRequest;
@@ -20,6 +21,9 @@ import retrofit2.http.Query;
 public interface ApiService {
     @POST("auth.php")
     Call<LoginResponse> login(@Body LoginRequest loginRequest);
+
+    @GET("auth.php")
+    Call<AppInfoResponse> getAppInfo(@Query("action") String action);
 
     @GET("scan.php")
     Call<ScanResponse> getPackageInfo(@Header("Authorization") String token, @Query("action") String action, @Query("package_code") String packageCode);

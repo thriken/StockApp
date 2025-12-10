@@ -44,7 +44,7 @@ public class SettingsFragment extends Fragment {
 
         // Load saved URL
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
-        String currentUrl = sharedPreferences.getString("base_url", "https://yuan.win7e.com");
+        String currentUrl = sharedPreferences.getString("base_url", "https://yuan.win7e.com/api");
         editTextServerUrl.setText(currentUrl);
 
         // Save Button

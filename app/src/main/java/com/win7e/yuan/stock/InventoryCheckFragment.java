@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.win7e.yuan.stock.model.InventoryTaskListResponse;
 import com.win7e.yuan.stock.model.InventoryTask;
+import com.win7e.yuan.stock.network.ApiService;
 import com.win7e.yuan.stock.network.RetrofitClient;
 
 import java.util.List;
@@ -40,13 +41,20 @@ public class InventoryCheckFragment extends Fragment {
     }
 
     private void fetchInventoryTasks() {
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
+        ApiService apiService = RetrofitClient.getApiService(requireContext());
+        if (apiService == null) {
+            Toast.makeText(requireContext(), "请先设置API地址", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
         String token = sharedPreferences.getString("token", "");
         String authToken = "Bearer " + token;
 
-        RetrofitClient.getApiService().getInventoryTasks(authToken, "list").enqueue(new Callback<InventoryTaskListResponse>() {
+        apiService.getInventoryTasks(authToken, "list").enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<InventoryTaskListResponse> call, Response<InventoryTaskListResponse> response) {
+            public void onResponse(@NonNull Call<InventoryTaskListResponse> call, @NonNull Response<InventoryTaskListResponse> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null && response.body().getCode() == 200) {
                     List<InventoryTask> tasks = response.body().getData();
                     if (tasks != null && !tasks.isEmpty()) {
@@ -65,7 +73,8 @@ public class InventoryCheckFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<InventoryTaskListResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<InventoryTaskListResponse> call, @NonNull Throwable t) {
+                if (!isAdded()) return;
                 Toast.makeText(getContext(), "网络错误，请检查连接", Toast.LENGTH_SHORT).show();
             }
         });

@@ -23,7 +23,6 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Settings"
         android:src="@drawable/ic_settings" />
 
     <LinearLayout
@@ -35,13 +34,21 @@
         android:padding="32dp">
 
         <TextView
+            android:id="@+id/text_view_app_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="48dp"
             android:text="@string/InventorySystem"
             android:textColor="@android:color/white"
             android:textSize="32sp"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/text_view_app_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="48dp"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
 
         <EditText
             android:id="@+id/edit_text_email"
@@ -50,6 +57,7 @@
             android:background="@drawable/bg_edit_text_login"
             android:drawableStart="@drawable/ic_user"
             android:drawablePadding="12dp"
+            android:autofillHints="@string/text_loginid"
             android:hint="@string/text_loginid"
             android:inputType="textEmailAddress"
             android:textColor="@android:color/white"
@@ -63,6 +71,7 @@
             android:layout_marginTop="16dp"
             android:background="@drawable/bg_edit_text_login"
             android:drawableStart="@drawable/ic_lock"
+            android:autofillHints="@string/text_password"
             android:hint="@string/text_password"
             android:inputType="textPassword"
             android:textColor="@android:color/white"

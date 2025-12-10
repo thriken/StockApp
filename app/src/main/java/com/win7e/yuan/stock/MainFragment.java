@@ -18,18 +18,26 @@ import java.util.Map;
 public class MainFragment extends Fragment {
 
     private TextView userInfo;
+    private TextView appTitle;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         userInfo = view.findViewById(R.id.user_info);
+        appTitle = view.findViewById(R.id.app_title);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Set app title from cache
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
+        String appName = sharedPreferences.getString("app_name", getString(R.string.InventorySystem));
+        appTitle.setText(appName);
+
         Map<String, String> baseNames = new HashMap<>();
         baseNames.put("1", "信义基地");
         baseNames.put("2", "新丰基地");
@@ -78,8 +86,8 @@ public class MainFragment extends Fragment {
                     .setMessage("您确定要退出登录吗?")
                     .setPositiveButton("确定", (dialog, which) -> {
                         // Clear all stored user data
-                        SharedPreferences sharedPreferences = getContext().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
-                        sharedPreferences.edit().clear().apply();
+                        SharedPreferences prefs = requireContext().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
+                        prefs.edit().clear().apply();
 
                         // Navigate back to the LoginFragment
                         getParentFragmentManager().beginTransaction()

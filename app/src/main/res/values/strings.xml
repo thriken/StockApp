@@ -5,6 +5,7 @@
     <string name="btn_login">登录</string>
     <string name="text_loginid">账号</string>
     <string name="InventorySystem">原片管理系统</string>
+    <string name="app_version_format">v%1$s</string>
     <string name="barcode">包号/二维码</string>
     <string name="scan">扫描</string>
     <string name="targetRackNo">目标架号</string>

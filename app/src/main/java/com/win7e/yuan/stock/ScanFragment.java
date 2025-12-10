@@ -35,6 +35,7 @@ import com.win7e.yuan.stock.model.ScanRequest;
 import com.win7e.yuan.stock.model.ScanResponse;
 import com.win7e.yuan.stock.model.TargetInfo;
 import com.win7e.yuan.stock.model.TargetInfoResponse;
+import com.win7e.yuan.stock.network.ApiService;
 import com.win7e.yuan.stock.network.RetrofitClient;
 
 import retrofit2.Call;
@@ -61,8 +62,7 @@ public class ScanFragment extends Fragment {
     private TargetInfo currentTargetInfo;
     private int tempQuantity = 0;
 
-    private enum ScanTarget {PACKAGE, SHELF}
-
+    private enum ScanTarget { PACKAGE, SHELF }
     private ScanTarget currentScanTarget;
 
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
@@ -176,44 +176,36 @@ public class ScanFragment extends Fragment {
         shelfApiCall = () -> callApiForTargetInfo(editTextShelfId.getText().toString());
 
         editTextPackageId.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
                 handler.removeCallbacks(packageApiCall);
                 resetPackageInfo();
             }
-
-            @Override
-            public void afterTextChanged(Editable s) {
+            @Override public void afterTextChanged(Editable s) {
                 if (s.length() > 0) handler.postDelayed(packageApiCall, 1000);
             }
         });
 
         editTextShelfId.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
                 handler.removeCallbacks(shelfApiCall);
                 resetTargetInfo();
             }
-
-            @Override
-            public void afterTextChanged(Editable s) {
+            @Override public void afterTextChanged(Editable s) {
                 if (s.length() > 0) handler.postDelayed(shelfApiCall, 500);
             }
         });
     }
 
     private void callApiForPackageInfo(String packageCode) {
-        RetrofitClient.getApiService().getPackageInfo(authToken, "get_package_info", packageCode).enqueue(new Callback<ScanResponse>() {
+        ApiService apiService = RetrofitClient.getApiService(requireContext());
+        if (apiService == null) { return; }
+
+        apiService.getPackageInfo(authToken, "get_package_info", packageCode).enqueue(new Callback<ScanResponse>() {
             @Override
             public void onResponse(@NonNull Call<ScanResponse> call, @NonNull Response<ScanResponse> response) {
+                if (!isAdded()) return;
                 layoutPackageInfo.setVisibility(View.VISIBLE);
                 if (response.isSuccessful() && response.body() != null && response.body().getCode() == 200) {
                     currentPackageInfo = response.body().getData(); // CORRECTED: Get the flat data object
@@ -231,6 +223,7 @@ public class ScanFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<ScanResponse> call, @NonNull Throwable t) {
+                if (!isAdded()) return;
                 layoutPackageInfo.setVisibility(View.VISIBLE);
                 displayPackageInfo(false);
                 handleApiFailure(t, "Package API 失败");
@@ -239,56 +232,44 @@ public class ScanFragment extends Fragment {
     }
 
     private void callApiForTargetInfo(String rackCode) {
-        if (currentPackageInfo == null) {
-            Log.d(TAG, "callApiForTargetInfo: currentPackageInfo is null, aborting.");
-            return;
-        }
+        if (currentPackageInfo == null) return;
+        ApiService apiService = RetrofitClient.getApiService(requireContext());
+        if (apiService == null) { return; }
+
         String currentAreaType = currentPackageInfo.getCurrentAreaType();
-        Log.d(TAG, "callApiForTargetInfo: Requesting target info for rackCode: " + rackCode + ", currentAreaType: " + currentAreaType);
-
-        Call<TargetInfoResponse> call = RetrofitClient.getApiService().getTargetInfo(authToken, "get_target_info", rackCode, currentAreaType);
-        Log.d(TAG, "Request URL: " + call.request().url());
-
-        call.enqueue(new Callback<TargetInfoResponse>() {
+        apiService.getTargetInfo(authToken, "get_target_info", rackCode, currentAreaType).enqueue(new Callback<TargetInfoResponse>() {
             @Override
             public void onResponse(@NonNull Call<TargetInfoResponse> call, @NonNull Response<TargetInfoResponse> response) {
-                try {
-                    String rawJson = new Gson().toJson(response.body());
-                    Log.d(TAG, "onResponse: Raw JSON response: " + rawJson);
-                } catch (Exception e) {
-                    Log.e(TAG, "onResponse: Error converting response to JSON for logging", e);
-                }
-
+                if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null && response.body().getCode() == 200) {
                     currentTargetInfo = response.body().getData();
-                    Log.d(TAG, "onResponse: Parsed currentTargetInfo: " + new Gson().toJson(currentTargetInfo));
-
                     if (currentTargetInfo != null && currentTargetInfo.getOperationName() != null) {
-                        Log.d(TAG, "onResponse: currentTargetInfo is valid, calling displayOperationInfo.");
                         displayOperationInfo();
                         editTextQuantity.requestFocus();
                     } else {
-                        Log.e(TAG, "onResponse: Error - currentTargetInfo is null or operation name is missing.");
                         handleApiError(response, "目标库位号未找到或者错误");
                     }
                 } else {
-                    Log.e(TAG, "onResponse: API call not successful or body is null or code is not 200.");
                     handleApiError(response, "Target API 错误");
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<TargetInfoResponse> call, @NonNull Throwable t) {
-                Log.e(TAG, "onFailure: API call failed for target info.", t);
+                if (!isAdded()) return;
                 handleApiFailure(t, "Target API 失败");
             }
         });
     }
 
-
     private void executeTransaction() {
         if (currentPackageInfo == null || currentTargetInfo == null) {
             Toast.makeText(getContext(), "请先扫描包号和目标架号", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        ApiService apiService = RetrofitClient.getApiService(requireContext());
+        if (apiService == null) {
+            Toast.makeText(requireContext(), "请先设置API地址", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -310,9 +291,10 @@ public class ScanFragment extends Fragment {
 
         ScanRequest request = new ScanRequest(packageCode, targetRackCode, quantity, transactionType, "安卓设备提交", allUse);
 
-        RetrofitClient.getApiService().executeTransaction(authToken, request).enqueue(new Callback<ScanResponse>() {
+        apiService.executeTransaction(authToken, request).enqueue(new Callback<ScanResponse>() {
             @Override
             public void onResponse(@NonNull Call<ScanResponse> call, @NonNull Response<ScanResponse> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null && response.body().getCode() == 200) {
                     Toast.makeText(getContext(), "操作成功!", Toast.LENGTH_LONG).show();
                     resetAll();
@@ -323,6 +305,7 @@ public class ScanFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<ScanResponse> call, @NonNull Throwable t) {
+                if (!isAdded()) return;
                 handleApiFailure(t, "提交信息失败");
             }
         });
@@ -344,36 +327,22 @@ public class ScanFragment extends Fragment {
         }
     }
 
-    private void displayOperationInfo() {
-        Log.d(TAG, "displayOperationInfo: Called.");
-        if (currentTargetInfo == null) {
-            Log.e(TAG, "displayOperationInfo: currentTargetInfo is null. Cannot display operation info.");
-            return;
-        }
-
-        Log.d(TAG, "displayOperationInfo: currentTargetInfo: " + new Gson().toJson(currentTargetInfo));
-
+   private void displayOperationInfo() {
+        if (currentTargetInfo == null) return;
         String transactionName = currentTargetInfo.getOperationName();
-        String transactionType = currentTargetInfo.getOperationType();
-
-        Log.d(TAG, "displayOperationInfo: Transaction Name: " + transactionName + ", Transaction Type: " + transactionType);
-
         editTextDetectedOperation.setText(transactionName);
         selectSpinnerItemByValue(transactionName);
 
-        if ("usage_out".equals(transactionType)) {
+        if ("usage_out".equals(currentTargetInfo.getOperationType())) {
             checkBoxAllUse.setVisibility(View.VISIBLE);
         } else {
             checkBoxAllUse.setVisibility(View.GONE);
         }
-
         if (currentPackageInfo != null) {
-            Log.d(TAG, "displayOperationInfo: Setting quantity to " + currentPackageInfo.getPieces());
             editTextQuantity.setText(String.valueOf(currentPackageInfo.getPieces()));
-        } else {
-            Log.e(TAG, "displayOperationInfo: currentPackageInfo is null, cannot set quantity.");
         }
     }
+
 
     private void selectSpinnerItemByValue(String value) {
         if (value == null) return;
@@ -401,7 +370,7 @@ public class ScanFragment extends Fragment {
         selectSpinnerItemByValue("请选择操作类型");
     }
 
-    private void resetAll() {
+    private void resetAll(){
         resetPackageInfo();
         editTextPackageId.setText("");
         editTextShelfId.setText("");
@@ -439,7 +408,13 @@ public class ScanFragment extends Fragment {
                         .setMessage("您确定要退出登录吗?")
                         .setPositiveButton("确定", (dialog, which) -> {
                             if (getActivity() != null) {
-                                getActivity().finish();
+                                // Clear SharedPreferences
+                                SharedPreferences sharedPreferences = getActivity().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
+                                sharedPreferences.edit().clear().apply();
+                                // Navigate to LoginFragment
+                                getParentFragmentManager().beginTransaction()
+                                        .replace(R.id.fragment_container, new LoginFragment())
+                                        .commit();
                             }
                         })
                         .setNegativeButton("取消", null)

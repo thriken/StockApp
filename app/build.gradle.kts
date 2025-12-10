@@ -21,8 +21,8 @@ android {
         applicationId = "com.win7e.yuan.stock"
         minSdk = 21
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.11"
+        versionCode = 2
+        versionName = "1.21"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

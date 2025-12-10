@@ -1,33 +1,45 @@
 package com.win7e.yuan.stock.network;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.text.TextUtils;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
-    private static final String BASE_URL = "https://yuan.win7e.com/api/";
+
+    private static final String DEFAULT_BASE_URL = "https://yuan.win7e.com/api/";
 
     private static Retrofit retrofit = null;
+    private static String currentBaseUrl = null;
 
-    public static ApiService getApiService() {
-        if (retrofit == null) {
-            // Create a logging interceptor
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+    public static ApiService getApiService(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
+        String baseUrl = sharedPreferences.getString("base_url", DEFAULT_BASE_URL);
 
-            // Create a client with the interceptor
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .addInterceptor(loggingInterceptor)
-                    .build();
+        // Ensure the base URL ends with a slash, as required by Retrofit.
+        if (!baseUrl.endsWith("/")) {
+            baseUrl += "/";
+        }
 
-            // Build Retrofit with the custom client
+        if (retrofit == null || !baseUrl.equals(currentBaseUrl)) {
+            currentBaseUrl = baseUrl;
+
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+            httpClient.addInterceptor(logging);
+
             retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .client(client)
+                    .baseUrl(baseUrl)
                     .addConverterFactory(GsonConverterFactory.create())
+                    .client(httpClient.build())
                     .build();
         }
+
         return retrofit.create(ApiService.class);
     }
 }
