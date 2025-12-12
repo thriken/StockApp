@@ -1,28 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="16dp">
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="8dp"
+    app:cardElevation="4dp"
+    app:strokeWidth="0dp">
 
-    <TextView
-        android:id="@+id/text_view_task_name"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textSize="16sp" />
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/text_view_task_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:textSize="16sp" />
+        <TextView
+            android:id="@+id/text_view_task_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="#123 2024年11月全盘"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/text_view_task_status"/>
 
-    <TextView
-        android:id="@+id/text_view_task_progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp" />
+        <TextView
+            android:id="@+id/text_view_task_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="进行中"
+            android:background="@drawable/bg_status_inprogress"
+            android:textColor="@android:color/white"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/text_view_task_name"
+            app:layout_constraintBottom_toBottomOf="@+id/text_view_task_name"/>
 
-</LinearLayout>
+        <View
+            android:id="@+id/divider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:background="#e0e0e0"
+            app:layout_constraintTop_toBottomOf="@+id/text_view_task_name"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <TextView
+            android:id="@+id/label_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="盘点进度"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/divider"/>
+
+        <TextView
+            android:id="@+id/text_view_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="75 / 150"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/label_progress"/>
+
+        <TextView
+            android:id="@+id/label_difference"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="差异数"
+            app:layout_constraintTop_toTopOf="@+id/label_progress"
+            app:layout_constraintStart_toStartOf="@+id/guideline_center"/>
+
+        <TextView
+            android:id="@+id/text_view_difference"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2"
+            android:textColor="@android:color/holo_red_dark"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/guideline_center"
+            app:layout_constraintTop_toBottomOf="@+id/label_difference"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

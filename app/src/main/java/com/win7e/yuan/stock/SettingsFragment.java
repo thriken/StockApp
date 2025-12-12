@@ -16,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
+import com.win7e.yuan.stock.network.RetrofitClient;
+
 public class SettingsFragment extends Fragment {
 
     private EditText editTextServerUrl;
@@ -38,13 +40,15 @@ public class SettingsFragment extends Fragment {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
             activity.setSupportActionBar(toolbar);
-            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            if (activity.getSupportActionBar() != null) {
+                activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            }
         }
         toolbar.setNavigationOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        // Load saved URL
+        // Load saved URL or the default one statically
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
-        String currentUrl = sharedPreferences.getString("base_url", "https://yuan.win7e.com/api");
+        String currentUrl = sharedPreferences.getString("base_url", RetrofitClient.DEFAULT_BASE_URL);
         editTextServerUrl.setText(currentUrl);
 
         // Save Button

@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,10 +24,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.gson.Gson;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 import com.win7e.yuan.stock.model.ScanRequest;
@@ -42,9 +39,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ScanFragment extends Fragment {
-
-    private static final String TAG = "DEBUG_ScanFragment";
+public class ScanFragment extends BaseFragment {
 
     // UI Elements
     private EditText editTextPackageId, editTextShelfId, editTextDetectedOperation, editTextQuantity;
@@ -58,7 +53,7 @@ public class ScanFragment extends Fragment {
     private final Handler handler = new Handler();
     private Runnable packageApiCall, shelfApiCall;
     private String authToken;
-    private ScanResponse.Data currentPackageInfo; // CORRECTED TYPE
+    private ScanResponse.Data currentPackageInfo;
     private TargetInfo currentTargetInfo;
     private int tempQuantity = 0;
 
@@ -208,7 +203,7 @@ public class ScanFragment extends Fragment {
                 if (!isAdded()) return;
                 layoutPackageInfo.setVisibility(View.VISIBLE);
                 if (response.isSuccessful() && response.body() != null && response.body().getCode() == 200) {
-                    currentPackageInfo = response.body().getData(); // CORRECTED: Get the flat data object
+                    currentPackageInfo = response.body().getData();
                     if (currentPackageInfo != null && currentPackageInfo.getPackageCode() != null) {
                         displayPackageInfo(true);
                         editTextShelfId.requestFocus();
@@ -217,7 +212,7 @@ public class ScanFragment extends Fragment {
                     }
                 } else {
                     displayPackageInfo(false);
-                    handleApiError(response, "Package API 错误");
+                    handleApiError(response);
                 }
             }
 
@@ -226,7 +221,7 @@ public class ScanFragment extends Fragment {
                 if (!isAdded()) return;
                 layoutPackageInfo.setVisibility(View.VISIBLE);
                 displayPackageInfo(false);
-                handleApiFailure(t, "Package API 失败");
+                handleApiFailure(t);
             }
         });
     }
@@ -247,17 +242,17 @@ public class ScanFragment extends Fragment {
                         displayOperationInfo();
                         editTextQuantity.requestFocus();
                     } else {
-                        handleApiError(response, "目标库位号未找到或者错误");
+                        handleApiError(response);
                     }
                 } else {
-                    handleApiError(response, "Target API 错误");
+                    handleApiError(response);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<TargetInfoResponse> call, @NonNull Throwable t) {
                 if (!isAdded()) return;
-                handleApiFailure(t, "Target API 失败");
+                handleApiFailure(t);
             }
         });
     }
@@ -299,14 +294,14 @@ public class ScanFragment extends Fragment {
                     Toast.makeText(getContext(), "操作成功!", Toast.LENGTH_LONG).show();
                     resetAll();
                 } else {
-                    handleApiError(response, "提交信息发生错误");
+                    handleApiError(response);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ScanResponse> call, @NonNull Throwable t) {
                 if (!isAdded()) return;
-                handleApiFailure(t, "提交信息失败");
+                handleApiFailure(t);
             }
         });
     }
@@ -375,16 +370,6 @@ public class ScanFragment extends Fragment {
         editTextPackageId.setText("");
         editTextShelfId.setText("");
         editTextPackageId.requestFocus();
-    }
-
-    private void handleApiError(Response<?> response, String tag) {
-        Log.e(TAG, tag + "- Code: " + response.code() + " Message: " + response.message());
-        Toast.makeText(getContext(), tag + ": " + response.message(), Toast.LENGTH_SHORT).show();
-    }
-
-    private void handleApiFailure(Throwable t, String tag) {
-        Log.e(TAG, tag + " - API call failed", t);
-        Toast.makeText(getContext(), tag, Toast.LENGTH_SHORT).show();
     }
 
     private void setupBottomNavigation(View view) {

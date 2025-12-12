@@ -1,4 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_graph"/>
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.win7e.yuan.stock.LoginFragment"
+        android:label="LoginFragment"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_loginFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.win7e.yuan.stock.MainFragment"
+        android:label="MainFragment"
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_mainFragment_to_scanFragment"
+            app:destination="@id/scanFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_inventoryCheckFragment"
+            app:destination="@id/inventoryCheckFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/scanFragment"
+        android:name="com.win7e.yuan.stock.ScanFragment"
+        android:label="ScanFragment"
+        tools:layout="@layout/fragment_scan" />
+
+    <fragment
+        android:id="@+id/inventoryCheckFragment"
+        android:name="com.win7e.yuan.stock.InventoryCheckFragment"
+        android:label="InventoryCheckFragment"
+        tools:layout="@layout/fragment_inventory_check">
+        <action
+            android:id="@+id/action_inventoryCheckFragment_to_inventoryCheckDetailFragment"
+            app:destination="@id/inventoryCheckDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/inventoryCheckDetailFragment"
+        android:name="com.win7e.yuan.stock.InventoryCheckDetailFragment"
+        android:label="InventoryCheckDetailFragment"
+        tools:layout="@layout/fragment_inventory_check_detail" />
+
+</navigation>

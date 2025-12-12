@@ -11,7 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
 
-    private static final String DEFAULT_BASE_URL = "https://yuan.win7e.com/api/";
+    public static final String DEFAULT_BASE_URL = "https://yuan.023sc.net/api/";
 
     private static Retrofit retrofit = null;
     private static String currentBaseUrl = null;
