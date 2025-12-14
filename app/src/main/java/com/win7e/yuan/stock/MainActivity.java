@@ -6,6 +6,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.win7e.yuan.stock.model.AppInfoResponse;
 import com.win7e.yuan.stock.network.ApiService;
@@ -27,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_main);
 
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        NavController navController = navHostFragment.getNavController();
+
         fetchAndCacheAppInfo(); // Fetch app info on startup
 
         if (savedInstanceState == null) {
@@ -44,17 +49,11 @@ public class MainActivity extends AppCompatActivity {
                 bundle.putString("role", role);
                 bundle.putString("base_id", baseId);
 
-                MainFragment mainFragment = new MainFragment();
-                mainFragment.setArguments(bundle);
+                navController.navigate(R.id.mainFragment, bundle);
 
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, mainFragment)
-                        .commit();
             } else {
                 // No token, go to LoginFragment
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, new LoginFragment())
-                        .commit();
+                navController.navigate(R.id.loginFragment);
             }
         }
     }
@@ -88,15 +87,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            super.onBackPressed();
-        } else {
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        NavController navController = navHostFragment.getNavController();
+        if (navController.getCurrentDestination().getId() == R.id.mainFragment) {
             if (System.currentTimeMillis() - lastBackPressTime < 2000) {
                 super.onBackPressed();
             } else {
                 Toast.makeText(this, R.string.press_back_again_to_exit, Toast.LENGTH_SHORT).show();
                 lastBackPressTime = System.currentTimeMillis();
             }
+        } else {
+            super.onBackPressed();
         }
     }
 }

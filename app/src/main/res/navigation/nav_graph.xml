@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_loginFragment_to_mainFragment"
             app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
 
     <fragment
@@ -32,7 +35,11 @@
         android:id="@+id/scanFragment"
         android:name="com.win7e.yuan.stock.ScanFragment"
         android:label="ScanFragment"
-        tools:layout="@layout/fragment_scan" />
+        tools:layout="@layout/fragment_scan" >
+        <action
+            android:id="@+id/action_scanFragment_to_historyFragment"
+            app:destination="@id/historyFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/inventoryCheckFragment"
@@ -49,5 +56,17 @@
         android:name="com.win7e.yuan.stock.InventoryCheckDetailFragment"
         android:label="InventoryCheckDetailFragment"
         tools:layout="@layout/fragment_inventory_check_detail" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.win7e.yuan.stock.SettingsFragment"
+        android:label="SettingsFragment"
+        tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.win7e.yuan.stock.HistoryFragment"
+        android:label="HistoryFragment"
+        tools:layout="@layout/fragment_history" />
 
 </navigation>

@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.win7e.yuan.stock.model.InventoryTask;
@@ -40,19 +41,9 @@ public class InventoryTaskListAdapter extends RecyclerView.Adapter<InventoryTask
         holder.difference.setText(String.valueOf(task.getDifferenceCount()));
 
         holder.itemView.setOnClickListener(v -> {
-            // Create a new instance of the detail fragment
-            InventoryCheckDetailFragment detailFragment = new InventoryCheckDetailFragment();
-
-            // Create a bundle to pass the task ID
             Bundle bundle = new Bundle();
             bundle.putInt("taskId", task.getId());
-            detailFragment.setArguments(bundle);
-
-            // Use the FragmentManager to perform the transaction, consistent with the rest of the app
-            fragment.getParentFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, detailFragment)
-                    .addToBackStack(null) // Add to back stack to allow returning
-                    .commit();
+            NavHostFragment.findNavController(fragment).navigate(R.id.action_inventoryCheckFragment_to_inventoryCheckDetailFragment, bundle);
         });
     }
 

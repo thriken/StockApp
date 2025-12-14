@@ -1,13 +1,12 @@
 plugins {
     id("com.android.application")
+    id("org.jetbrains.kotlin.android")
 }
 
 android {
     namespace = "com.win7e.yuan.stock"
     compileSdk = 36
 
-    // The signingConfigs block is now only for local builds.
-    // The CI process will handle signing separately.
     signingConfigs {
         create("release") {
             storeFile = file("apksign.keystore")
@@ -21,8 +20,8 @@ android {
         applicationId = "com.win7e.yuan.stock"
         minSdk = 21
         targetSdk = 36
-        versionCode = 2
-        versionName = "1.21"
+        versionCode = 1
+        versionName = "1.12"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -49,14 +48,14 @@ android {
 }
 
 dependencies {
-    implementation(libs.appcompat)
-    implementation(libs.material)
-    implementation(libs.constraintlayout)
-    implementation(libs.navigation.fragment)
-    implementation(libs.navigation.ui)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.ext.junit)
-    androidTestImplementation(libs.espresso.core)
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     // GridLayout
     implementation("androidx.gridlayout:gridlayout:1.0.0")

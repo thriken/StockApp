@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavOptions;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.gson.Gson;
 import com.win7e.yuan.stock.model.LoginResponse; // Reusing a simple response model for parsing error messages
@@ -61,7 +63,7 @@ public abstract class BaseFragment extends Fragment {
     /**
      * Clears user session and navigates back to the Login screen.
      */
-    private void forceLogout() {
+    protected void forceLogout() {
         if (!isAdded() || getActivity() == null) return;
 
         Toast.makeText(requireContext(), "登录已过期，请重新登录", Toast.LENGTH_LONG).show();
@@ -71,8 +73,10 @@ public abstract class BaseFragment extends Fragment {
         sharedPreferences.edit().clear().apply();
 
         // Navigate back to the LoginFragment, clearing the back stack
-        getParentFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new LoginFragment())
-                .commit();
+        NavOptions navOptions = new NavOptions.Builder()
+                .setPopUpTo(R.id.nav_graph, true) // Pop up to the start of the graph, clearing the back stack.
+                .build();
+
+        NavHostFragment.findNavController(this).navigate(R.id.loginFragment, null, navOptions);
     }
 }

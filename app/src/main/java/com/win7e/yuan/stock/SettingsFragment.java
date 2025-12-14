@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.win7e.yuan.stock.network.RetrofitClient;
 
@@ -44,7 +45,7 @@ public class SettingsFragment extends Fragment {
                 activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
         }
-        toolbar.setNavigationOnClickListener(v -> getParentFragmentManager().popBackStack());
+        toolbar.setNavigationOnClickListener(v -> NavHostFragment.findNavController(this).navigateUp());
 
         // Load saved URL or the default one statically
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
@@ -59,7 +60,7 @@ public class SettingsFragment extends Fragment {
                 editor.putString("base_url", newUrl);
                 editor.apply();
                 Toast.makeText(getContext(), "Server URL saved!", Toast.LENGTH_SHORT).show();
-                getParentFragmentManager().popBackStack();
+                NavHostFragment.findNavController(this).navigateUp();
             } else {
                 Toast.makeText(getContext(), "URL cannot be empty", Toast.LENGTH_SHORT).show();
             }

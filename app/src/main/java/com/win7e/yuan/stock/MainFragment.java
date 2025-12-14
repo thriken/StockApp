@@ -12,10 +12,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainFragment extends Fragment {
+public class MainFragment extends BaseFragment {
 
     private TextView userInfo;
     private TextView appTitle;
@@ -60,24 +62,12 @@ public class MainFragment extends Fragment {
             if ("manager".equals(role) || "admin".equals(role)) {
                 CardView inventoryCheckCard = view.findViewById(R.id.card_inventory_check);
                 inventoryCheckCard.setVisibility(View.VISIBLE);
-                inventoryCheckCard.setOnClickListener(v -> {
-                    InventoryCheckFragment inventoryCheckFragment = new InventoryCheckFragment();
-                    getParentFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container, inventoryCheckFragment)
-                            .addToBackStack(null)
-                            .commit();
-                });
+                inventoryCheckCard.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.action_mainFragment_to_inventoryCheckFragment));
             }
         }
 
         CardView scanCard = view.findViewById(R.id.card_scan);
-        scanCard.setOnClickListener(v -> {
-            ScanFragment scanFragment = new ScanFragment(); 
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, scanFragment)
-                    .addToBackStack(null)
-                    .commit();
-        });
+        scanCard.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.action_mainFragment_to_scanFragment));
 
         CardView logoutCard = view.findViewById(R.id.card_logout);
         logoutCard.setOnClickListener(v -> {
@@ -90,9 +80,7 @@ public class MainFragment extends Fragment {
                         prefs.edit().clear().apply();
 
                         // Navigate back to the LoginFragment
-                        getParentFragmentManager().beginTransaction()
-                                .replace(R.id.fragment_container, new LoginFragment())
-                                .commit();
+                        NavHostFragment.findNavController(MainFragment.this).navigate(R.id.loginFragment);
                     })
                     .setNegativeButton("取消", null)
                     .show();

@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.journeyapps.barcodescanner.ScanContract;
@@ -117,7 +118,7 @@ public class ScanFragment extends BaseFragment {
                 activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
         }
-        toolbar.setNavigationOnClickListener(v -> getParentFragmentManager().popBackStack());
+        toolbar.setNavigationOnClickListener(v -> NavHostFragment.findNavController(this).navigateUp());
     }
 
     private void setupSpinner() {
@@ -377,31 +378,18 @@ public class ScanFragment extends BaseFragment {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.navigation_home) {
-                getParentFragmentManager().popBackStack();
+                NavHostFragment.findNavController(this).navigateUp();
                 return true;
             } else if (itemId == R.id.navigation_scan) {
                 return true; // Already here
             } else if (itemId == R.id.navigation_history) {
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, new HistoryFragment())
-                        .addToBackStack(null)
-                        .commit();
+                NavHostFragment.findNavController(this).navigate(R.id.action_scanFragment_to_historyFragment);
                 return true;
             } else if (itemId == R.id.navigation_logout) {
                 new AlertDialog.Builder(getContext())
                         .setTitle("退出登录")
                         .setMessage("您确定要退出登录吗?")
-                        .setPositiveButton("确定", (dialog, which) -> {
-                            if (getActivity() != null) {
-                                // Clear SharedPreferences
-                                SharedPreferences sharedPreferences = getActivity().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
-                                sharedPreferences.edit().clear().apply();
-                                // Navigate to LoginFragment
-                                getParentFragmentManager().beginTransaction()
-                                        .replace(R.id.fragment_container, new LoginFragment())
-                                        .commit();
-                            }
-                        })
+                        .setPositiveButton("确定", (dialog, which) -> forceLogout())
                         .setNegativeButton("取消", null)
                         .show();
                 return true;

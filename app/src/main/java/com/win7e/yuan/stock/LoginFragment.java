@@ -14,7 +14,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
+import com.google.gson.Gson;
 import com.win7e.yuan.stock.model.AppInfoResponse;
 import com.win7e.yuan.stock.model.LoginRequest;
 import com.win7e.yuan.stock.model.LoginResponse;
@@ -22,6 +25,9 @@ import com.win7e.yuan.stock.model.User;
 import com.win7e.yuan.stock.network.ApiService;
 import com.win7e.yuan.stock.network.RetrofitClient;
 
+import java.io.IOException;
+
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,10 +53,7 @@ public class LoginFragment extends BaseFragment {
         appVersionTextView = view.findViewById(R.id.text_view_app_version);
 
         buttonLogin.setOnClickListener(v -> loginUser());
-        buttonSettings.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new SettingsFragment())
-                .addToBackStack(null)
-                .commit());
+        buttonSettings.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.settingsFragment));
 
         updateAppInfoFromCache();
         fetchAppInfo();
@@ -61,6 +64,7 @@ public class LoginFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        // Refresh the app info when returning from another screen (like Settings)
         updateAppInfoFromCache();
     }
 
@@ -105,10 +109,7 @@ public class LoginFragment extends BaseFragment {
         ApiService apiService = RetrofitClient.getApiService(requireContext());
         if (apiService == null) {
             Toast.makeText(requireContext(), "请先设置API地址", Toast.LENGTH_LONG).show();
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new SettingsFragment())
-                    .addToBackStack(null)
-                    .commit();
+            NavHostFragment.findNavController(this).navigate(R.id.settingsFragment);
             buttonLogin.setEnabled(true);
             return;
         }
@@ -148,12 +149,7 @@ public class LoginFragment extends BaseFragment {
                     bundle.putString("role", user.getRole());
                     bundle.putString("base_id", user.getBaseId());
 
-                    MainFragment mainFragment = new MainFragment();
-                    mainFragment.setArguments(bundle);
-
-                    getParentFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container, mainFragment)
-                            .commit();
+                    NavHostFragment.findNavController(LoginFragment.this).navigate(R.id.action_loginFragment_to_mainFragment, bundle);
                 } else {
                     handleApiError(response);
                     buttonLogin.setEnabled(true);
