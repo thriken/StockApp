@@ -1,15 +1,14 @@
 package com.win7e.yuan.stock.network;
 
 import com.win7e.yuan.stock.model.AppInfoResponse;
+import com.win7e.yuan.stock.model.InventoryCheckDetailResponse;
+import com.win7e.yuan.stock.model.InventoryCheckRequest;
 import com.win7e.yuan.stock.model.InventoryTaskListResponse;
-import com.win7e.yuan.stock.model.InventoryTask;
 import com.win7e.yuan.stock.model.LoginRequest;
 import com.win7e.yuan.stock.model.LoginResponse;
 import com.win7e.yuan.stock.model.ScanRequest;
 import com.win7e.yuan.stock.model.ScanResponse;
 import com.win7e.yuan.stock.model.TargetInfoResponse;
-
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -36,4 +35,10 @@ public interface ApiService {
 
     @GET("inventory_check.php")
     Call<InventoryTaskListResponse> getInventoryTasks(@Header("Authorization") String token, @Query("action") String action);
+
+    @GET("inventory_check.php")
+    Call<InventoryCheckDetailResponse> getInventoryCheckDetail(@Header("Authorization") String token, @Query("action") String action, @Query("task_id") int taskId);
+
+    @POST("inventory_check.php")
+    Call<ScanResponse> submitInventoryCheck(@Header("Authorization") String token, @Body InventoryCheckRequest request);
 }

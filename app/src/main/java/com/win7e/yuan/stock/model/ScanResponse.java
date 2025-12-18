@@ -10,6 +10,7 @@ public class ScanResponse {
 
     public int getCode() { return code; }
     public String getMessage() { return message; }
+    public String getMsg() { return message; } // Added for compatibility
     public Data getData() { return data; }
 
     // This class now directly represents the flat "data" object from the server
