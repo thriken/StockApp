@@ -14,17 +14,23 @@ public class InventoryCheckDetailResponse {
     public Data getData() { return data; }
 
     public static class Data {
+        private Task task;
+        private List<InventoryPackage> packages;
+
+        public Task getTask() { return task; }
+        public List<InventoryPackage> getPackages() { return packages; }
+    }
+
+    public static class Task {
         @SerializedName("total_packages")
         private int totalPackages;
         @SerializedName("checked_packages")
         private int checkedPackages;
         @SerializedName("difference_count")
         private int differenceCount;
-        private List<InventoryPackage> packages;
 
         public int getTotalPackages() { return totalPackages; }
         public int getCheckedPackages() { return checkedPackages; }
         public int getDifferenceCount() { return differenceCount; }
-        public List<InventoryPackage> getPackages() { return packages; }
     }
 }

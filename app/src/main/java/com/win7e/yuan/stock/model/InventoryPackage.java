@@ -1,11 +1,20 @@
 package com.win7e.yuan.stock.model;
 
-public class InventoryPackage {
-    private String package_code;
-    private String rack_code;
-    private int quantity;
+import com.google.gson.annotations.SerializedName;
 
-    public String getPackageCode() { return package_code; }
-    public String getRackCode() { return rack_code; }
+public class InventoryPackage {
+    @SerializedName("package_code")
+    private String packageCode;
+    @SerializedName("rack_code")
+    private String rackCode;
+    @SerializedName("rack_name")
+    private String rackName;
+    private int pieces; // System quantity
+    private int quantity; // Checked quantity
+
+    public String getPackageCode() { return packageCode; }
+    public String getRackCode() { return rackCode; }
+    public String getRackName() { return rackName; }
+    public int getPieces() { return pieces; }
     public int getQuantity() { return quantity; }
 }

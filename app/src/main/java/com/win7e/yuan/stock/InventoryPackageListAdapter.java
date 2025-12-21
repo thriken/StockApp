@@ -30,30 +30,34 @@ public class InventoryPackageListAdapter extends RecyclerView.Adapter<InventoryP
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         InventoryPackage pkg = packages.get(position);
-        holder.packageCodeTextView.setText(pkg.getPackageCode());
-        holder.rackCodeTextView.setText(pkg.getRackCode());
-        holder.quantityTextView.setText(String.valueOf(pkg.getQuantity()));
+        holder.lineNumberTextView.setText(String.format("%d.", position + 1));
+        holder.packageCodeTextView.setText("包号: " + pkg.getPackageCode());
+        holder.rackNameTextView.setText("库位: " + pkg.getRackName());
+        holder.piecesTextView.setText("片数: " + pkg.getPieces());
     }
 
     @Override
     public int getItemCount() {
-        return packages.size();
+        return packages != null ? packages.size() : 0;
     }
 
     public void updateData(List<InventoryPackage> newPackages) {
         packages.clear();
-        packages.addAll(newPackages);
+        if (newPackages != null) {
+            packages.addAll(newPackages);
+        }
         notifyDataSetChanged();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView packageCodeTextView, rackCodeTextView, quantityTextView;
+        TextView lineNumberTextView, packageCodeTextView, rackNameTextView, piecesTextView;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
+            lineNumberTextView = itemView.findViewById(R.id.text_view_line_number);
             packageCodeTextView = itemView.findViewById(R.id.text_view_package_code);
-            rackCodeTextView = itemView.findViewById(R.id.text_view_rack_code);
-            quantityTextView = itemView.findViewById(R.id.text_view_quantity);
+            rackNameTextView = itemView.findViewById(R.id.text_view_rack_name);
+            piecesTextView = itemView.findViewById(R.id.text_view_pieces);
         }
     }
 }

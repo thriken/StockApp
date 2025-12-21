@@ -2,27 +2,35 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:gravity="center_vertical"
     android:orientation="horizontal"
     android:padding="8dp">
+
+    <TextView
+        android:id="@+id/text_view_line_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="1." />
 
     <TextView
         android:id="@+id/text_view_package_code"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Package Code" />
+        android:text="包号: C2025012" />
 
     <TextView
-        android:id="@+id/text_view_rack_code"
+        android:id="@+id/text_view_rack_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Rack Code" />
+        android:text="库位: 原片区-1" />
 
     <TextView
-        android:id="@+id/text_view_quantity"
+        android:id="@+id/text_view_pieces"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Quantity" />
+        android:text="片数: 24" />
 
 </LinearLayout>

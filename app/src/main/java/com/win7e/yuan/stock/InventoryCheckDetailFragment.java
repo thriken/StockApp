@@ -200,10 +200,12 @@ public class InventoryCheckDetailFragment extends BaseFragment {
     }
 
     private void updateUI(InventoryCheckDetailResponse.Data data) {
-        if (data == null) return;
+        if (data == null || data.getTask() == null) return;
 
-        progressTextView.setText(String.format("已盘/总数\n%d / %d", data.getCheckedPackages(), data.getTotalPackages()));
-        differenceTextView.setText(String.format("差异数\n%d", data.getDifferenceCount())); // Assuming difference count is available
+        InventoryCheckDetailResponse.Task task = data.getTask();
+
+        progressTextView.setText(String.format("已盘/总数\n%d / %d", task.getCheckedPackages(), task.getTotalPackages()));
+        differenceTextView.setText(String.format("差异数\n%d", task.getDifferenceCount()));
 
         List<InventoryPackage> packages = data.getPackages();
         if (packages != null) {
