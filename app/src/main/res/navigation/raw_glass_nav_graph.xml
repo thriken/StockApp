@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/raw_glass_nav_graph"
+    app:startDestination="@id/rawGlassSearchFragment">
+
+    <fragment
+        android:id="@+id/rawGlassSearchFragment"
+        android:name="com.win7e.yuan.stock.RawGlassSearchFragment"
+        android:label="fragment_raw_glass_search"
+        tools:layout="@layout/fragment_raw_glass_search" >
+        <action
+            android:id="@+id/action_rawGlassSearchFragment_to_rawGlassDetailFragment"
+            app:destination="@id/rawGlassDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/rawGlassDetailFragment"
+        android:name="com.win7e.yuan.stock.RawGlassDetailFragment"
+        android:label="fragment_raw_glass_detail"
+        tools:layout="@layout/fragment_raw_glass_detail" >
+        <argument
+            android:name="glassTypeId"
+            app:argType="integer" />
+        <argument
+            android:name="baseAll"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
+
+</navigation>

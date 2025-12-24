@@ -17,7 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.google.gson.Gson;
+import com.win7e.yuan.stock.helper.AuthHelper;
 import com.win7e.yuan.stock.model.AppInfoResponse;
 import com.win7e.yuan.stock.model.LoginRequest;
 import com.win7e.yuan.stock.model.LoginResponse;
@@ -25,9 +25,6 @@ import com.win7e.yuan.stock.model.User;
 import com.win7e.yuan.stock.network.ApiService;
 import com.win7e.yuan.stock.network.RetrofitClient;
 
-import java.io.IOException;
-
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -53,7 +50,7 @@ public class LoginFragment extends BaseFragment {
         appVersionTextView = view.findViewById(R.id.text_view_app_version);
 
         buttonLogin.setOnClickListener(v -> loginUser());
-        buttonSettings.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.settingsFragment));
+        buttonSettings.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.action_loginFragment_to_settingsFragment));
 
         updateAppInfoFromCache();
         fetchAppInfo();
@@ -64,12 +61,11 @@ public class LoginFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Refresh the app info when returning from another screen (like Settings)
         updateAppInfoFromCache();
     }
 
     private void updateAppInfoFromCache() {
-        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences(AuthHelper.PREFS_NAME, Context.MODE_PRIVATE);
         String appName = sharedPreferences.getString("app_name", getString(R.string.InventorySystem));
         String appVersion = sharedPreferences.getString("app_version", "");
 
@@ -89,7 +85,7 @@ public class LoginFragment extends BaseFragment {
                 if (isAdded() && response.isSuccessful() && response.body() != null && response.body().getCode() == 200) {
                     AppInfoResponse.Data data = response.body().getData();
                     if (data != null) {
-                        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
+                        SharedPreferences sharedPreferences = requireContext().getSharedPreferences(AuthHelper.PREFS_NAME, Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("app_name", data.getAppName());
                         editor.putString("app_version", data.getVersion());
@@ -109,7 +105,7 @@ public class LoginFragment extends BaseFragment {
         ApiService apiService = RetrofitClient.getApiService(requireContext());
         if (apiService == null) {
             Toast.makeText(requireContext(), "请先设置API地址", Toast.LENGTH_LONG).show();
-            NavHostFragment.findNavController(this).navigate(R.id.settingsFragment);
+            NavHostFragment.findNavController(this).navigate(R.id.action_loginFragment_to_settingsFragment);
             buttonLogin.setEnabled(true);
             return;
         }
@@ -134,11 +130,13 @@ public class LoginFragment extends BaseFragment {
                 if (response.isSuccessful() && response.body() != null && response.body().getCode() == 200) {
                     Toast.makeText(requireContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
 
-                    User user = response.body().getData().getUser();
+                    LoginResponse.LoginData loginData = response.body().getData();
+                    User user = loginData.getUser();
 
-                    SharedPreferences sharedPreferences = requireContext().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
+                    SharedPreferences sharedPreferences = requireContext().getSharedPreferences(AuthHelper.PREFS_NAME, Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("token", response.body().getData().getToken());
+                    editor.putString(AuthHelper.KEY_TOKEN, loginData.getToken());
+                    editor.putLong(AuthHelper.KEY_EXPIRE_TIME, loginData.getExpireTime()); // Use correct key and method
                     editor.putString("name", user.getName());
                     editor.putString("role", user.getRole());
                     editor.putString("base_id", user.getBaseId());

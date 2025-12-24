@@ -5,68 +5,83 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/loginFragment">
 
+    <!-- Main/Home Fragment -->
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.win7e.yuan.stock.MainFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_mainFragment_to_inventoryCheckFragment"
+            app:destination="@id/inventoryCheckFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_scanFragment"
+            app:destination="@id/scanFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_raw_glass_nav_graph"
+            app:destination="@id/raw_glass_nav_graph" />
+    </fragment>
+
+    <!-- Login Fragment -->
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.win7e.yuan.stock.LoginFragment"
-        android:label="LoginFragment"
-        tools:layout="@layout/fragment_login">
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
         <action
             android:id="@+id/action_loginFragment_to_mainFragment"
-            app:destination="@id/mainFragment" />
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_loginFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
     </fragment>
 
-    <fragment
-        android:id="@+id/mainFragment"
-        android:name="com.win7e.yuan.stock.MainFragment"
-        android:label="MainFragment"
-        tools:layout="@layout/fragment_main">
-        <action
-            android:id="@+id/action_mainFragment_to_scanFragment"
-            app:destination="@id/scanFragment" />
-        <action
-            android:id="@+id/action_mainFragment_to_inventoryCheckFragment"
-            app:destination="@id/inventoryCheckFragment" />
-    </fragment>
-
+    <!-- Scan Fragment -->
     <fragment
         android:id="@+id/scanFragment"
         android:name="com.win7e.yuan.stock.ScanFragment"
         android:label="ScanFragment"
-        tools:layout="@layout/fragment_scan" >
+        tools:layout="@layout/fragment_scan">
         <action
             android:id="@+id/action_scanFragment_to_historyFragment"
             app:destination="@id/historyFragment" />
     </fragment>
 
-    <fragment
-        android:id="@+id/inventoryCheckFragment"
-        android:name="com.win7e.yuan.stock.InventoryCheckFragment"
-        android:label="InventoryCheckFragment"
-        tools:layout="@layout/fragment_inventory_check">
-        <action
-            android:id="@+id/action_inventoryCheckFragment_to_inventoryCheckDetailFragment"
-            app:destination="@id/inventoryCheckDetailFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/inventoryCheckDetailFragment"
-        android:name="com.win7e.yuan.stock.InventoryCheckDetailFragment"
-        android:label="InventoryCheckDetailFragment"
-        tools:layout="@layout/fragment_inventory_check_detail" />
-
-    <fragment
-        android:id="@+id/settingsFragment"
-        android:name="com.win7e.yuan.stock.SettingsFragment"
-        android:label="SettingsFragment"
-        tools:layout="@layout/fragment_settings" />
-
+    <!-- History Fragment -->
     <fragment
         android:id="@+id/historyFragment"
         android:name="com.win7e.yuan.stock.HistoryFragment"
         android:label="HistoryFragment"
         tools:layout="@layout/fragment_history" />
+
+    <!-- Settings Fragment -->
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.win7e.yuan.stock.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
+
+    <!-- Inventory Check Flow -->
+    <fragment
+        android:id="@+id/inventoryCheckFragment"
+        android:name="com.win7e.yuan.stock.InventoryCheckFragment"
+        android:label="InventoryCheckFragment" >
+        <action
+            android:id="@+id/action_inventoryCheckFragment_to_inventoryCheckDetailFragment"
+            app:destination="@id/inventoryCheckDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/inventoryCheckDetailFragment"
+        android:name="com.win7e.yuan.stock.InventoryCheckDetailFragment"
+        android:label="InventoryCheckDetailFragment" >
+        <argument
+            android:name="taskId"
+            app:argType="integer" />
+    </fragment>
+
+    <!-- Raw Glass Query Flow -->
+    <include app:graph="@navigation/raw_glass_nav_graph" />
 
 </navigation>

@@ -91,6 +91,7 @@ public class ScanFragment extends BaseFragment {
         setupClickListeners();
         setupTextWatchers();
         setupBottomNavigation(view);
+        editTextPackageId.requestFocus();
     }
 
     private void initializeViews(View view) {

@@ -21,7 +21,7 @@ import com.win7e.yuan.stock.network.RetrofitClient;
 
 public class SettingsFragment extends Fragment {
 
-    private EditText editTextServerUrl;
+    private EditText apiUrlEditText;
 
     @Nullable
     @Override
@@ -33,37 +33,42 @@ public class SettingsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        editTextServerUrl = view.findViewById(R.id.edit_text_server_url);
-        Button buttonSave = view.findViewById(R.id.button_save);
+        setupToolbar(view);
+        apiUrlEditText = view.findViewById(R.id.edit_text_api_url);
+        Button saveButton = view.findViewById(R.id.button_save_settings);
+
+        loadCurrentApiUrl();
+
+        saveButton.setOnClickListener(v -> saveApiUrl());
+    }
+
+    private void setupToolbar(View view) {
         Toolbar toolbar = view.findViewById(R.id.toolbar);
+        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
+    }
 
-        // Setup Toolbar
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        if (activity != null) {
-            activity.setSupportActionBar(toolbar);
-            if (activity.getSupportActionBar() != null) {
-                activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            }
+    private void loadCurrentApiUrl() {
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
+        String currentUrl = sharedPreferences.getString(RetrofitClient.KEY_API_BASE_URL, RetrofitClient.DEFAULT_BASE_URL);
+        apiUrlEditText.setText(currentUrl);
+    }
+
+    private void saveApiUrl() {
+        String newUrl = apiUrlEditText.getText().toString().trim();
+        if (!newUrl.isEmpty()) {
+            SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(RetrofitClient.KEY_API_BASE_URL, newUrl);
+            editor.apply();
+
+            // Invalidate the existing Retrofit client so it gets recreated with the new URL
+            RetrofitClient.invalidate();
+
+            Toast.makeText(getContext(), "API地址已保存", Toast.LENGTH_SHORT).show();
+            NavHostFragment.findNavController(this).popBackStack(); // Go back to the previous screen
+        } else {
+            Toast.makeText(getContext(), "API地址不能为空", Toast.LENGTH_SHORT).show();
         }
-        toolbar.setNavigationOnClickListener(v -> NavHostFragment.findNavController(this).navigateUp());
-
-        // Load saved URL or the default one statically
-        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
-        String currentUrl = sharedPreferences.getString("base_url", RetrofitClient.DEFAULT_BASE_URL);
-        editTextServerUrl.setText(currentUrl);
-
-        // Save Button
-        buttonSave.setOnClickListener(v -> {
-            String newUrl = editTextServerUrl.getText().toString().trim();
-            if (!newUrl.isEmpty()) {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("base_url", newUrl);
-                editor.apply();
-                Toast.makeText(getContext(), "Server URL saved!", Toast.LENGTH_SHORT).show();
-                NavHostFragment.findNavController(this).navigateUp();
-            } else {
-                Toast.makeText(getContext(), "URL cannot be empty", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 }

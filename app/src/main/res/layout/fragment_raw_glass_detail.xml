@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:title="原片库存详情" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Glass Type Info -->
+            <TextView
+                android:id="@+id/text_view_glass_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="原片名称: 5mm透明浮法玻璃"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/text_view_glass_attributes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="品牌: 信义 | 厚度: 5.0mm | 颜色: 透明" />
+
+            <!-- Inventory Summary -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="库存摘要"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/text_view_summary_packages"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="总包数: 15" />
+
+            <TextView
+                android:id="@+id/text_view_summary_pieces"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="总片数: 1500" />
+
+            <TextView
+                android:id="@+id/text_view_summary_area"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="总面积: 0.0 m²" />
+
+            <TextView
+                android:id="@+id/text_view_summary_racks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="占用库位数: 3" />
+
+            <!-- Detailed Inventory Distribution -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="详细库存分布"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_detailed_distribution"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

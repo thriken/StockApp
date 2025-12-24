@@ -14,6 +14,8 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.win7e.yuan.stock.helper.AuthHelper;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,8 +37,7 @@ public class MainFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Set app title from cache
-        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences(AuthHelper.PREFS_NAME, Context.MODE_PRIVATE);
         String appName = sharedPreferences.getString("app_name", getString(R.string.InventorySystem));
         appTitle.setText(appName);
 
@@ -58,32 +59,39 @@ public class MainFragment extends BaseFragment {
             String userInfoText = "[" + baseNames.get(baseId) + "] " + roles.get(role) + " " + name;
             userInfo.setText(userInfoText);
 
-            // Show inventory check card for specific roles
             if ("manager".equals(role) || "admin".equals(role)) {
                 CardView inventoryCheckCard = view.findViewById(R.id.card_inventory_check);
                 inventoryCheckCard.setVisibility(View.VISIBLE);
-                inventoryCheckCard.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.action_mainFragment_to_inventoryCheckFragment));
+                inventoryCheckCard.setOnClickListener(v -> navigateToModule(R.id.action_mainFragment_to_inventoryCheckFragment));
             }
         }
 
-        CardView scanCard = view.findViewById(R.id.card_scan);
-        scanCard.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.action_mainFragment_to_scanFragment));
+        view.findViewById(R.id.card_scan).setOnClickListener(v -> navigateToModule(R.id.action_mainFragment_to_scanFragment));
+        view.findViewById(R.id.card_raw_glass_query).setOnClickListener(v -> navigateToModule(R.id.action_mainFragment_to_raw_glass_nav_graph));
 
-        CardView logoutCard = view.findViewById(R.id.card_logout);
-        logoutCard.setOnClickListener(v -> {
+        view.findViewById(R.id.card_logout).setOnClickListener(v -> {
             new AlertDialog.Builder(getContext())
                     .setTitle("退出登录")
                     .setMessage("您确定要退出登录吗?")
                     .setPositiveButton("确定", (dialog, which) -> {
-                        // Clear all stored user data
-                        SharedPreferences prefs = requireContext().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
-                        prefs.edit().clear().apply();
-
-                        // Navigate back to the LoginFragment
-                        NavHostFragment.findNavController(MainFragment.this).navigate(R.id.loginFragment);
+                        if (getActivity() instanceof MainActivity) {
+                            ((MainActivity) getActivity()).forceLogout("您已成功退出登录");
+                        }
                     })
                     .setNegativeButton("取消", null)
                     .show();
         });
+    }
+
+    private void navigateToModule(int actionId) {
+        if (getContext() == null) return;
+
+        if (AuthHelper.isSessionValid(getContext())) {
+            NavHostFragment.findNavController(this).navigate(actionId);
+        } else {
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).forceLogout("会话已过期，请重新登录");
+            }
+        }
     }
 }

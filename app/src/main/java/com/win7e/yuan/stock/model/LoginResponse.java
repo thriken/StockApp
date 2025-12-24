@@ -1,5 +1,7 @@
 package com.win7e.yuan.stock.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class LoginResponse {
     private int code;
     private String message;
@@ -14,10 +16,15 @@ public class LoginResponse {
 
     public static class LoginData {
         private String token;
+
+        @SerializedName("expire_time")
+        private long expireTime; // Unix timestamp in seconds
+
         private User user;
 
         // Getters
         public String getToken() { return token; }
+        public long getExpireTime() { return expireTime; }
         public User getUser() { return user; }
     }
 }

@@ -3,7 +3,7 @@ package com.win7e.yuan.stock.model;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
-public class PackageResponse {
+public class PackageInfoResponse {
 
     private int code;
     private Data data;
@@ -12,10 +12,10 @@ public class PackageResponse {
     public Data getData() { return data; }
 
     public static class Data {
-        private List<Package> packages;
+        private List<PackageInfo> packages;
         private Pagination pagination;
 
-        public List<Package> getPackages() { return packages; }
+        public List<PackageInfo> getPackages() { return packages; }
         public Pagination getPagination() { return pagination; }
     }
 }
