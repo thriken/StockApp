@@ -20,6 +20,12 @@
         <action
             android:id="@+id/action_mainFragment_to_raw_glass_nav_graph"
             app:destination="@id/raw_glass_nav_graph" />
+        <action
+            android:id="@+id/action_mainFragment_to_historyFragment"
+            app:destination="@id/historyFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_transferFragment"
+            app:destination="@id/transferFragment" />
     </fragment>
 
     <!-- Login Fragment -->
@@ -54,7 +60,18 @@
         android:id="@+id/historyFragment"
         android:name="com.win7e.yuan.stock.HistoryFragment"
         android:label="HistoryFragment"
-        tools:layout="@layout/fragment_history" />
+        tools:layout="@layout/fragment_history" >
+        <action
+            android:id="@+id/action_historyFragment_to_scanFragment"
+            app:destination="@id/scanFragment" />
+    </fragment>
+        
+    <!-- Transfer Fragment -->
+    <fragment
+        android:id="@+id/transferFragment"
+        android:name="com.win7e.yuan.stock.TransferFragment"
+        android:label="TransferFragment"
+        tools:layout="@layout/fragment_transfer" />
 
     <!-- Settings Fragment -->
     <fragment

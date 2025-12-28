@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".TransferFragment">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:title="跨基地转移" />
+
+    <EditText
+        android:id="@+id/edit_text_transfer_package_code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:hint="扫描或输入包号">
+        <requestFocus />
+    </EditText>
+
+    <LinearLayout
+        android:id="@+id/layout_transfer_package_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/text_view_transfer_package_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="包号: NT251226001 (6mm信义白玻)" />
+
+        <TextView
+            android:id="@+id/text_view_transfer_specification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="规格: 1200x2400mm" />
+
+        <TextView
+            android:id="@+id/text_view_transfer_pieces"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="数量: 35片" />
+
+        <TextView
+            android:id="@+id/text_view_transfer_entry_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="入库日期: 2025-12-28" />
+
+        <TextView
+            android:id="@+id/text_view_transfer_current_base"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="当前基地: 新丰基地" />
+    </LinearLayout>
+
+    <Spinner
+        android:id="@+id/spinner_target_base"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp" />
+
+    <Button
+        android:id="@+id/button_submit_transfer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="执行转移" />
+
+</LinearLayout>

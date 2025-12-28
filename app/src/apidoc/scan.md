@@ -104,7 +104,7 @@ GET /api/scan.php?action=get_target_info&target_rack_code=R001&current_area_type
 }
 ```
 
-### 3. POST /api/scan.php - 执行库存流转操作
+### 4. POST /api/scan.php - 执行库存流转操作
 
 执行库存流转操作，支持入库、出库、转移、报废等操作。
 
@@ -134,6 +134,7 @@ Content-Type: application/json
 - `transfer`: 库内转移
 - `scrap`: 报废
 - `return`: 退库
+- `location_adjust`: 跨基地转移
 
 #### 请求示例
 
@@ -208,6 +209,109 @@ Authorization: Bearer your-token-here
 | `scrap` | 报废操作 | 原片报废 |
 | `return_in` | 退库操作 | 加工剩余退库 |
 | `location_adjust` | 库区转移 | 库区调整 |
+
+### 5. POST /api/scan.php?action=location_adjust - 跨基地转移
+
+将玻璃包从一个基地转移到另一个基地的临时库位，系统自动获取目标库位。
+
+#### 请求参数
+
+**请求头**:
+```http
+Authorization: Bearer your-token-here
+Content-Type: application/json
+```
+
+**请求体 (JSON)**:
+
+| 参数名 | 类型 | 必填 | 描述 | 示例 |
+|--------|------|------|------|------|
+| package_code | string | 是 | 包号 | "NT251226001" |
+| target_base_id | integer | 是 | 目标基地ID | 3 |
+
+> **注意**: 系统会自动获取目标基地的第一个可用临时库位，无需手动指定库位编码。
+
+#### 请求示例
+
+```bash
+curl -X POST 'http://your-domain/api/scan.php?action=location_adjust' \
+     -H 'Authorization: Bearer your-token' \
+     -H 'Content-Type: application/json' \
+     -d '{
+         "package_code": "NT251226001",
+         "target_base_id": 3
+     }'
+```
+
+```javascript
+const response = await fetch('/api/scan.php?action=location_adjust', {
+    method: 'POST',
+    headers: {
+        'Authorization': 'Bearer your-token',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        package_code: 'NT251226001',
+        target_base_id: 3
+    })
+});
+
+const result = await response.json();
+if (result.code === 200) {
+    console.log('转移成功:', result.message);
+} else {
+    console.error('转移失败:', result.message);
+}
+```
+
+#### 响应示例
+
+**成功响应**:
+```json
+{
+    "code": 200,
+    "message": "库位调整操作成功完成！",
+    "timestamp": 1735276800,
+    "data": {
+        "package_code": "NT251226001",
+        "current_pieces": 35,
+        "from_base": {
+            "id": 2,
+            "name": "新丰基地"
+        },
+        "to_base": {
+            "id": 3,
+            "name": "金鱼基地"
+        },
+        "target_temp_rack": {
+            "id": 5,
+            "code": "JY-T-临时区",
+            "name": "临时区"
+        },
+        "transaction_type": "location_adjust",
+        "operator": "管理员"
+    }
+}
+```
+
+#### 业务规则
+
+1. **权限验证**: 只有库管可以执行跨基地转移
+2. **跨基地限制**: 目标基地必须与当前基地不同
+3. **自动库位**: 系统自动获取目标基地的第一个可用临时库位(`area_type = 'temporary'`)
+4. **转移数量**: 自动使用包的当前片数
+5. **备注生成**: 自动生成格式为"从{源基地名}转来"的备注
+6. **顺序号调整**: 源库位和目标库位的包顺序号都会自动重新整理
+
+#### 错误响应
+
+| 错误码 | 错误信息 | 描述 |
+|--------|----------|------|
+| 400 | 参数错误 | 请求参数格式或值不正确 |
+| 401 | 认证失败 | Token无效或已过期 |
+| 403 | 权限不足 | 非管理员用户尝试操作 |
+| 404 | 资源不存在 | 包、基地或临时库位不存在 |
+| 500 | 服务器错误 | 内部服务器错误 |
 
 
 
@@ -433,5 +537,5 @@ function handleScanResult(scanData) {
 
 ---
 
-*最后更新: 2025-11-01*  
+*最后更新: 2025-12-28*  
 *版本: 2.0*

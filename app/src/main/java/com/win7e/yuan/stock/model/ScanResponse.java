@@ -13,10 +13,10 @@ public class ScanResponse {
     public String getMsg() { return message; } // Added for compatibility
     public Data getData() { return data; }
 
-    // This class now directly represents the flat "data" object from the server
     public static class Data {
         private int id;
-        private String package_code;
+        @SerializedName("package_code")
+        private String packageCode;
         @SerializedName("glass_name")
         private String glassName;
         private int pieces;
@@ -30,10 +30,13 @@ public class ScanResponse {
         @SerializedName("base_name")
         private String baseName;
         private String status;
+        private String specification;
+        @SerializedName("entry_date")
+        private String entryDate;
 
         // --- Getters ---
         public int getId() { return id; }
-        public String getPackageCode() { return package_code; }
+        public String getPackageCode() { return packageCode; }
         public String getGlassName() { return glassName; }
         public int getPieces() { return pieces; }
         public int getQuantity() { return quantity; }
@@ -42,5 +45,7 @@ public class ScanResponse {
         public String getCurrentAreaType() { return currentAreaType; }
         public String getBaseName() { return baseName; }
         public String getStatus() { return status; }
+        public String getSpecification() { return specification; }
+        public String getEntryDate() { return entryDate; }
     }
 }

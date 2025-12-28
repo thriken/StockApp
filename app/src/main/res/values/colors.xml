@@ -2,4 +2,20 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- History Operation Colors -->
+    <color name="history_in_bg">#e8f5e9</color>
+    <color name="history_in_text">#2e7d32</color>
+
+    <color name="history_out_bg">#fff3e0</color>
+    <color name="history_out_text">#f57c00</color>
+
+    <color name="history_return_bg">#e3f2fd</color>
+    <color name="history_return_text">#1565c0</color>
+
+    <color name="history_scrap_bg">#ffebee</color>
+    <color name="history_scrap_text">#c62828</color>
+
+    <color name="history_adjust_bg">#f3e5f5</color>
+    <color name="history_adjust_text">#7b1fa2</color>
 </resources>

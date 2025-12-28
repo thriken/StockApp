@@ -66,8 +66,11 @@ public class MainFragment extends BaseFragment {
             }
         }
 
+        // --- Setup Navigation for all cards ---
         view.findViewById(R.id.card_scan).setOnClickListener(v -> navigateToModule(R.id.action_mainFragment_to_scanFragment));
         view.findViewById(R.id.card_raw_glass_query).setOnClickListener(v -> navigateToModule(R.id.action_mainFragment_to_raw_glass_nav_graph));
+        view.findViewById(R.id.card_history).setOnClickListener(v -> navigateToModule(R.id.action_mainFragment_to_historyFragment));
+        view.findViewById(R.id.card_transfer).setOnClickListener(v -> navigateToModule(R.id.action_mainFragment_to_transferFragment));
 
         view.findViewById(R.id.card_logout).setOnClickListener(v -> {
             new AlertDialog.Builder(getContext())

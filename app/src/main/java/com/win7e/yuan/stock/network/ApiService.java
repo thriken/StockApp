@@ -1,7 +1,9 @@
 package com.win7e.yuan.stock.network;
 
 import com.win7e.yuan.stock.model.AppInfoResponse;
+import com.win7e.yuan.stock.model.BaseListResponse;
 import com.win7e.yuan.stock.model.DropdownOptionsResponse;
+import com.win7e.yuan.stock.model.HistoryResponse;
 import com.win7e.yuan.stock.model.InventoryCheckDetailResponse;
 import com.win7e.yuan.stock.model.InventoryCheckRequest;
 import com.win7e.yuan.stock.model.InventoryTaskListResponse;
@@ -13,6 +15,7 @@ import com.win7e.yuan.stock.model.RawGlassSearchResponse;
 import com.win7e.yuan.stock.model.ScanRequest;
 import com.win7e.yuan.stock.model.ScanResponse;
 import com.win7e.yuan.stock.model.TargetInfoResponse;
+import com.win7e.yuan.stock.model.TransferRequest;
 
 import java.util.Map;
 
@@ -35,10 +38,20 @@ public interface ApiService {
     Call<ScanResponse> getPackageInfo(@Header("Authorization") String token, @Query("action") String action, @Query("package_code") String packageCode);
 
     @GET("scan.php")
+    Call<BaseListResponse> getBases(@Header("Authorization") String token, @Query("action") String action);
+
+    @GET("scan.php")
     Call<TargetInfoResponse> getTargetInfo(@Header("Authorization") String token, @Query("action") String action, @Query("target_rack_code") String rackCode, @Query("current_area_type") String currentAreaType);
 
     @POST("scan.php")
     Call<ScanResponse> executeTransaction(@Header("Authorization") String token, @Body ScanRequest scanRequest);
+
+    @POST("scan.php")
+    Call<ScanResponse> transferPackage(
+        @Header("Authorization") String token,
+        @Query("action") String action, // Should be "location_adjust"
+        @Body TransferRequest request
+    );
 
     @GET("inventory_check.php")
     Call<InventoryTaskListResponse> getInventoryTasks(@Header("Authorization") String token, @Query("action") String action);
@@ -77,5 +90,12 @@ public interface ApiService {
         @Query("page") int page,
         @Query("page_size") int pageSize,
         @Query("base_all") Boolean baseAll
+    );
+
+    // History API
+    @GET("history.php")
+    Call<HistoryResponse> getHistory(
+        @Header("Authorization") String token,
+        @QueryMap Map<String, String> options
     );
 }
