@@ -17,9 +17,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
 import com.win7e.yuan.stock.model.InventoryCheckDetailResponse;
 import com.win7e.yuan.stock.model.InventoryCheckRequest;
 import com.win7e.yuan.stock.model.InventoryPackage;
@@ -27,6 +29,7 @@ import com.win7e.yuan.stock.model.ScanResponse;
 import com.win7e.yuan.stock.network.ApiService;
 import com.win7e.yuan.stock.network.RetrofitClient;
 
+import java.io.IOException;
 import java.util.List;
 
 import retrofit2.Call;
@@ -40,7 +43,6 @@ public class InventoryCheckDetailFragment extends BaseFragment {
     private EditText packageCodeEditText, rackCodeEditText, quantityEditText;
     private Button submitButton;
     private RecyclerView packagesRecyclerView;
-    private InventoryPackageListAdapter adapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -84,8 +86,8 @@ public class InventoryCheckDetailFragment extends BaseFragment {
         rackCodeEditText = view.findViewById(R.id.edit_text_rack_code);
         quantityEditText = view.findViewById(R.id.edit_text_quantity);
         submitButton = view.findViewById(R.id.button_submit);
+        // Use the correct ID from the layout file
         packagesRecyclerView = view.findViewById(R.id.recycler_view_packages);
-        packagesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
     private void setupFocusListeners() {
@@ -124,7 +126,7 @@ public class InventoryCheckDetailFragment extends BaseFragment {
                 if (isAdded() && response.isSuccessful() && response.body() != null && response.body().getCode() == 200) {
                     updateUI(response.body().getData());
                 } else if (isAdded()) {
-                    Toast.makeText(getContext(), "Failed to fetch details", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "获取详情失败", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -141,7 +143,7 @@ public class InventoryCheckDetailFragment extends BaseFragment {
         String quantityStr = quantityEditText.getText().toString();
 
         if (TextUtils.isEmpty(packageCode) || TextUtils.isEmpty(rackCode) || TextUtils.isEmpty(quantityStr)) {
-            Toast.makeText(getContext(), "Please fill all fields", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "请填写所有字段", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -161,17 +163,24 @@ public class InventoryCheckDetailFragment extends BaseFragment {
                     ScanResponse scanResponse = response.body();
                     Toast.makeText(getContext(), scanResponse.getMsg(), Toast.LENGTH_SHORT).show();
                     if (scanResponse.getCode() == 200) {
-                        // Success
                         fetchTaskDetails();
                         clearInputFields();
                         packageCodeEditText.requestFocus();
                     } else {
-                        // API error, e.g. validation failed
                         handleApiError();
                     }
                 } else {
-                    // HTTP error
-                    Toast.makeText(getContext(), "提交失败，请检查网络", Toast.LENGTH_SHORT).show();
+                    try {
+                        if (response.errorBody() != null) {
+                            String errorString = response.errorBody().string();
+                            ScanResponse errorResponse = new Gson().fromJson(errorString, ScanResponse.class);
+                            Toast.makeText(getContext(), errorResponse.getMessage(), Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(getContext(), "提交失败，未知错误", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (IOException e) {
+                        Toast.makeText(getContext(), "提交失败，解析错误", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 
@@ -189,31 +198,30 @@ public class InventoryCheckDetailFragment extends BaseFragment {
     }
 
     private void handleApiError() {
-        // For now, we assume the package code is the most likely source of error.
         packageCodeEditText.requestFocus();
         packageCodeEditText.selectAll();
     }
 
     @Override
     protected void handleApiFailure(Throwable t) {
-        Toast.makeText(getContext(), "API Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "网络错误: " + t.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
     private void updateUI(InventoryCheckDetailResponse.Data data) {
         if (data == null || data.getTask() == null) return;
 
         InventoryCheckDetailResponse.Task task = data.getTask();
-
         progressTextView.setText(String.format("已盘/总数\n%d / %d", task.getCheckedPackages(), task.getTotalPackages()));
         differenceTextView.setText(String.format("差异数\n%d", task.getDifferenceCount()));
 
         List<InventoryPackage> packages = data.getPackages();
-        if (packages != null) {
-            if (adapter == null) {
-                adapter = new InventoryPackageListAdapter(packages);
+        if (packagesRecyclerView != null) { // Add null check for safety
+            if (packagesRecyclerView.getAdapter() == null) {
+                InventoryPackageListAdapter adapter = new InventoryPackageListAdapter(packages);
+                packagesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                 packagesRecyclerView.setAdapter(adapter);
             } else {
-                adapter.updateData(packages);
+                ((InventoryPackageListAdapter) packagesRecyclerView.getAdapter()).updateData(packages);
             }
         }
     }
