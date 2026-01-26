@@ -9,6 +9,7 @@ import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.gson.Gson;
+import com.win7e.yuan.stock.helper.AuthHelper;
 import com.win7e.yuan.stock.model.LoginResponse; // Reusing a simple response model for parsing error messages
 
 import java.io.IOException;
@@ -27,13 +28,22 @@ public abstract class BaseFragment extends Fragment {
     protected void handleApiError(Response<?> response) {
         if (!isAdded() || getContext() == null) return;
 
-        // Handle 401 Unauthorized specifically
+        // Handle 401 Unauthorized
         if (response.code() == 401) {
-            forceLogout();
-            return;
+            // Check if we are already in LoginFragment. If so, 401 means login failed, not session expired.
+            boolean alreadyInLogin = false;
+            try {
+                alreadyInLogin = NavHostFragment.findNavController(this).getCurrentDestination() != null
+                        && NavHostFragment.findNavController(this).getCurrentDestination().getId() == R.id.loginFragment;
+            } catch (Exception ignored) {}
+
+            if (!alreadyInLogin) {
+                forceLogout();
+                return;
+            }
         }
 
-        // For other HTTP errors, try to parse the error message from the error body
+        // For other HTTP errors (or 401 while on Login screen), try to parse the error message from the error body
         String errorMessage = "操作失败，请重试。";
         if (response.errorBody() != null) {
             try (ResponseBody errorBody = response.errorBody()) {
@@ -68,9 +78,16 @@ public abstract class BaseFragment extends Fragment {
 
         Toast.makeText(requireContext(), "登录已过期，请重新登录", Toast.LENGTH_LONG).show();
 
-        // Clear all stored user data
-        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("stock_prefs", Context.MODE_PRIVATE);
-        sharedPreferences.edit().clear().apply();
+        // Clear only session-related data. 
+        // DO NOT use clear() because it would also remove the API Base URL and other settings.
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences(AuthHelper.PREFS_NAME, Context.MODE_PRIVATE);
+        sharedPreferences.edit()
+                .remove(AuthHelper.KEY_TOKEN)
+                .remove(AuthHelper.KEY_EXPIRE_TIME)
+                .remove("name")
+                .remove("role")
+                .remove("base_id")
+                .apply();
 
         // Navigate back to the LoginFragment, clearing the back stack
         NavOptions navOptions = new NavOptions.Builder()
